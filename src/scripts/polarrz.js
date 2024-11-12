@@ -17,8 +17,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function actualizarGrafico() {
         const inputBits = document.getElementById('inputBits').value.trim();
-        const voltajeAlto = parseFloat(document.getElementById('voltajeAlto').value);
-        const voltajeBajo = parseFloat(document.getElementById('voltajeBajo').value);
+        const voltajeAlto = parseFloat(document.getElementById('voltajePositivo').value);
+        const voltajeBajo = parseFloat(document.getElementById('voltajeNegativo').value);
 
         if (!/^[01]+$/.test(inputBits)) {
             alert('Por favor, ingrese solo 1s y 0s');
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
             chart.destroy();
         }
 
-        const ctx = document.getElementById('polarrzChart').getContext('2d');
+        const ctx = document.getElementById('polarRZChart').getContext('2d');
         chart = new Chart(ctx, {
             type: 'line',
             data: {

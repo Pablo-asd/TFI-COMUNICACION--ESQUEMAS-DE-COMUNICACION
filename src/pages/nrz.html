@@ -16,10 +16,25 @@
     </head>
 <body>
     <h2>Esquema de Modulación NRZ</h2>
-   
-    <canvas id="nrzChart" width="600" height="300"></canvas>
-    <input type="text" id="inputBits" placeholder="Ingrese la secuencia de bits (ej: 1001)">
-    <button id="btnGenerar">Generar Gráfico</button>
+    
+    <div class="controls">
+        <input type="text" id="inputBits" placeholder="Ingrese la secuencia de bits (ej: 1001)">
+        
+        <div class="voltage-controls">
+            <label>Voltaje Alto (V):
+                <input type="number" id="voltajeAlto" value="5" step="0.5">
+            </label>
+            
+            <label>Voltaje Bajo (V):
+                <input type="number" id="voltajeBajo" value="-5" step="0.5">
+            </label>
+        </div>
+        
+        <button id="btnGenerar">Generar Gráfico</button>
+    </div>
+
+    <canvas id="nrzChart" width="800" height="400"></canvas>
+    
     <script src="../scripts/nrz.js"></script>
 </body>
 </html>
