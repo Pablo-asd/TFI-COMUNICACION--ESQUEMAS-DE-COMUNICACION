@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMI Encoding with Chart.js</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Configuración global de Chart.js
+        Chart.defaults.scale.grid.display = false; // Oculta todas las cuadrículas
+        Chart.defaults.color = '#ffffff'; // Color del texto
+        Chart.defaults.plugins.legend.labels.color = '#ffffff'; // Color de las etiquetas
+        Chart.defaults.backgroundColor = '#333333'; // Color de fondo
+    </script>
+    <link rel="stylesheet" href="../styles/styles.css">
+</head>
+<body>
+    <h2>Esquema de Modulación AMI con Chart.js</h2>
+    
+    <div class="controls">
+        <input type="text" id="inputBits" placeholder="Ingrese la secuencia de bits (ej: 10000000011100001)">
+        
+        <div class="voltage-controls">
+            <label>Voltaje Positivo (V):
+                <input type="number" id="voltajePositivo" value="5" step="0.5">
+            </label>
+            
+            <label>Voltaje Negativo (V):
+                <input type="number" id="voltajeNegativo" value="-5" step="0.5">
+            </label>
+        </div>
+        
+        <button id="btnGenerar">Generar Gráfico</button>
+    </div>
+
+    <canvas id="amiChart"></canvas>
+    
+    <script src="../scripts/ami.js"></script>
+</body>
+</html>

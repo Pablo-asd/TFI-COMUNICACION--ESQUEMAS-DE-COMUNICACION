@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>[Nombre] Encoding with Chart.js</title>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            // Configuración global de Chart.js
+            Chart.defaults.scale.grid.display = false;
+            Chart.defaults.color = '#ffffff';
+            Chart.defaults.borderColor = '#ffffff';
+            Chart.defaults.plugins.legend.labels.color = '#ffffff';
+        </script>
+        <link rel="stylesheet" href="../styles/styles.css">
+    </head>
+<body>
+    <h2>Esquema de Modulación Manchester con Chart.js</h2>
+    
+    <div class="controls">
+        <input type="text" id="inputBits" placeholder="Ingrese la secuencia de bits (ej: 1001)">
+        
+        <div class="voltage-controls">
+            <label>Voltaje Positivo (V):
+                <input type="number" id="voltajePositivo" value="3" step="0.5">
+            </label>
+            
+            <label>Voltaje Negativo (V):
+                <input type="number" id="voltajeNegativo" value="-3" step="0.5">
+            </label>
+        </div>
+        
+        <button id="btnGenerar">Generar Gráfico</button>
+    </div>
+
+    <canvas id="manchesterChart" width="800" height="400"></canvas>
+    
+    <script src="../scripts/manchester.js"></script>
+</body>
+</html>

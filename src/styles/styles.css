@@ -1,0 +1,99 @@
+body {
+    background-color: #000000;
+    color: #ffffff;
+    margin: 0;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+h1, h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 32px;
+}
+
+h2 {
+    font-size: 24px;
+}
+
+p {
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+.boton {
+    display: inline-block;
+    background-color: #000000;
+    color: #ffffff;
+    padding: 12px 24px;
+    margin: 10px;
+    text-decoration: none;
+    border: 2px solid #00FFFF;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.boton:hover {
+    background-color: #00FFFF;
+    color: #000000;
+}
+
+/* Estilos para las páginas de gráficas */
+canvas {
+    width: 100% !important;
+    height: 800px !important;
+    margin: 40px 0;
+}
+
+.controls {
+    margin: 20px 0;
+    text-align: center;
+}
+
+input[type="text"],
+input[type="number"] {
+    background-color: #000000;
+    color: #ffffff;
+    border: 1px solid #00FFFF;
+    padding: 8px 12px;
+    margin: 5px;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+button {
+    background-color: #000000;
+    color: #ffffff;
+    border: 2px solid #00FFFF;
+    padding: 10px 20px;
+    margin: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: #00FFFF;
+    color: #000000;
+}
+
+.voltage-controls {
+    margin: 15px 0;
+}
+
+label {
+    color: #ffffff;
+    margin: 0 10px;
+    font-size: 16px;
+} 

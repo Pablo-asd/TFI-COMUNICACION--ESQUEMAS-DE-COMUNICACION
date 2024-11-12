@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>[Nombre] Encoding with Chart.js</title>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            // Configuración global de Chart.js
+            Chart.defaults.scale.grid.display = false;
+            Chart.defaults.color = '#ffffff';
+            Chart.defaults.borderColor = '#ffffff';
+            Chart.defaults.plugins.legend.labels.color = '#ffffff';
+        </script>
+        <link rel="stylesheet" href="../styles/styles.css">
+    </head>
+<body>
+    <h2>Esquema de Modulación NRZ con Chart.js</h2>
+   
+    <canvas id="nrzChart" width="600" height="300"></canvas>
+    <input type="text" id="inputBits" placeholder="Ingrese la secuencia de bits (ej: 1001)">
+    <button id="btnGenerar">Generar Gráfico</button>
+    <script src="../scripts/nrz.js"></script>
+</body>
+</html>
