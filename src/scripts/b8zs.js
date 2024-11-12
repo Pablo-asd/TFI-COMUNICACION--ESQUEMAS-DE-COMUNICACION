@@ -1,111 +1,80 @@
-class B8ZSEncoder {
-    constructor() {
-        this.chart = null;
-        this.initializeEventListeners();
-    }
+document.addEventListener('DOMContentLoaded', function() {
+    let chart = null;
 
-    initializeEventListeners() {
-        document.addEventListener('DOMContentLoaded', () => {
-            const btnGenerar = document.getElementById('btnGenerar');
-            btnGenerar.addEventListener('click', () => this.generarGrafico());
-
-            const inputBits = document.getElementById('inputBits');
-            inputBits.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    this.generarGrafico();
-                }
-            });
-        });
-    }
-
-    validarEntrada(bitSequence) {
-        if (!/^[01]+$/.test(bitSequence)) {
-            alert('Por favor ingrese solo 1s y 0s');
-            return false;
-        }
-        return true;
-    }
-
-    applyB8ZS(data, labels, currentVoltage, voltajePositivo, voltajeNegativo) {
-        // Retroceder 8 posiciones para aplicar el patrón B8ZS
-        data.splice(-8);
-        labels.splice(-8);
-
-        // Aplicar el patrón B8ZS: 000VB0VB
-        const b8zsPattern = [
-            0, 0, 0,
-            currentVoltage,    // V
-            -currentVoltage,   // B
-            0,
-            -currentVoltage,   // V
-            currentVoltage     // B
-        ];
-        
-        data.push(...b8zsPattern);
-        labels.push(
-            'B8ZS 0', 'B8ZS 0', 'B8ZS 0',
-            'V', 'B', '0', 'V', 'B'
-        );
-
-        return currentVoltage; // Retornar el último voltaje usado
-    }
-
-    generarDatos(bitSequence, voltajePositivo, voltajeNegativo) {
+    function generarB8ZS(bits, voltajePositivo, voltajeNegativo) {
         const data = [];
-        const labels = [];
-        let currentVoltage = voltajePositivo;
-        let consecutiveZeros = 0;
+        let contadorCeros = 0;
+        let ultimoPulsoPositivo = true;
 
-        for (let i = 0; i < bitSequence.length; i++) {
-            labels.push(`Bit ${i}`);
-
-            if (bitSequence[i] === '1') {
-                data.push(currentVoltage);
-                currentVoltage = -currentVoltage;
-                consecutiveZeros = 0;
-            } else {
-                data.push(0);
-                consecutiveZeros++;
-
-                if (consecutiveZeros === 8) {
-                    currentVoltage = this.applyB8ZS(
-                        data, 
-                        labels, 
-                        currentVoltage,
-                        voltajePositivo, 
-                        voltajeNegativo
-                    );
-                    consecutiveZeros = 0;
+        for (let i = 0; i < bits.length; i++) {
+            if (bits[i] === '0') {
+                contadorCeros++;
+                if (contadorCeros === 8) {
+                    // Reemplazar los últimos 8 ceros con la secuencia B8ZS
+                    data[data.length - 7] = 0;
+                    data[data.length - 6] = 0;
+                    data[data.length - 5] = 0;
+                    
+                    if (ultimoPulsoPositivo) {
+                        // 000+-0-+
+                        data[data.length - 4] = voltajePositivo;
+                        data[data.length - 3] = voltajeNegativo;
+                        data[data.length - 2] = 0;
+                        data[data.length - 1] = voltajeNegativo;
+                        data.push(voltajePositivo);
+                    } else {
+                        // 000-+0+-
+                        data[data.length - 4] = voltajeNegativo;
+                        data[data.length - 3] = voltajePositivo;
+                        data[data.length - 2] = 0;
+                        data[data.length - 1] = voltajePositivo;
+                        data.push(voltajeNegativo);
+                    }
+                    contadorCeros = 0;
+                } else {
+                    data.push(0);
+                }
+            } else { // bit es '1'
+                contadorCeros = 0;
+                if (ultimoPulsoPositivo) {
+                    data.push(voltajeNegativo);
+                    ultimoPulsoPositivo = false;
+                } else {
+                    data.push(voltajePositivo);
+                    ultimoPulsoPositivo = true;
                 }
             }
         }
-
-        return { data, labels };
+        return data;
     }
 
-    generarGrafico() {
-        const bitSequence = document.getElementById('inputBits').value;
+    function actualizarGrafico() {
+        const inputBits = document.getElementById('inputBits').value.trim();
         const voltajePositivo = parseFloat(document.getElementById('voltajePositivo').value);
         const voltajeNegativo = parseFloat(document.getElementById('voltajeNegativo').value);
 
-        if (!this.validarEntrada(bitSequence)) return;
+        if (!/^[01]+$/.test(inputBits)) {
+            alert('Por favor, ingrese solo 1s y 0s');
+            return;
+        }
 
-        const { data, labels } = this.generarDatos(bitSequence, voltajePositivo, voltajeNegativo);
+        const b8zsData = generarB8ZS(inputBits, voltajePositivo, voltajeNegativo);
+        // Crear las etiquetas usando los bits ingresados
+        const labels = inputBits.split('').map((bit) => bit);
 
-        // Destruir el gráfico anterior si existe
-        if (this.chart) {
-            this.chart.destroy();
+        if (chart) {
+            chart.destroy();
         }
 
         const ctx = document.getElementById('b8zsChart').getContext('2d');
-        this.chart = new Chart(ctx, {
+        chart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Señal [Nombre]',
-                    data: data,
-                    borderColor: '#00FFFF', // Celeste eléctrico
+                    label: 'Señal B8ZS',
+                    data: b8zsData,
+                    borderColor: '#00FFFF',  // Color celeste eléctrico
                     borderWidth: 3,
                     fill: false,
                     stepped: true
@@ -113,35 +82,57 @@ class B8ZSEncoder {
             },
             options: {
                 responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        min: Math.min(voltajeNegativo, -1) * 1.2,
-                        max: Math.max(voltajePositivo, 1) * 1.2,
-                        title: {
-                            display: true,
-                            text: 'Voltaje (V)'
-                        },
-                        ticks: {
-                            stepSize: 1
-                        }
-                    },
+                maintainAspectRatio: false,
+                animation: {
                     x: {
-                        title: {
-                            display: true,
-                            text: 'Bits'
+                        type: 'number',
+                        easing: 'linear',
+                        duration: 1500,
+                        from: 0,
+                        delay(ctx) {
+                            return ctx.dataIndex * 150;
                         }
                     }
                 },
                 plugins: {
                     legend: {
-                        display: true
+                        labels: {
+                            font: {
+                                size: 16
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        border: {
+                            color: '#ffffff',
+                            width: 2
+                        },
+                        ticks: {
+                            color: '#ffffff',
+                            font: {
+                                size: 18,
+                                weight: 'bold'
+                            }
+                        }
                     },
-                    tooltip: {
-                        enabled: true,
-                        callbacks: {
-                            label: function(context) {
-                                return `Voltaje: ${context.raw}V`;
+                    y: {
+                        grid: {
+                            display: false
+                        },
+                        border: {
+                            color: '#ffffff',
+                            width: 2
+                        },
+                        ticks: {
+                            color: '#ffffff',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
                             }
                         }
                     }
@@ -149,7 +140,6 @@ class B8ZSEncoder {
             }
         });
     }
-}
 
-// Inicializar el codificador
-const b8zsEncoder = new B8ZSEncoder();
+    document.getElementById('btnGenerar').addEventListener('click', actualizarGrafico);
+});

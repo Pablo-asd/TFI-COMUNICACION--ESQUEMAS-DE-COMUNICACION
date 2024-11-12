@@ -1,82 +1,50 @@
-class ManchesterEncoder {
-    constructor() {
-        this.chart = null;
-        this.initializeEventListeners();
-    }
+document.addEventListener('DOMContentLoaded', function() {
+    let chart = null;
 
-    initializeEventListeners() {
-        document.addEventListener('DOMContentLoaded', () => {
-            const btnGenerar = document.getElementById('btnGenerar');
-            btnGenerar.addEventListener('click', () => this.generarGrafico());
-
-            const inputBits = document.getElementById('inputBits');
-            inputBits.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    this.generarGrafico();
-                }
-            });
-        });
-    }
-
-    validarEntrada(bitSequence) {
-        if (!/^[01]+$/.test(bitSequence)) {
-            alert('Por favor ingrese solo 1s y 0s');
-            return false;
-        }
-        return true;
-    }
-
-    generarDatos(bitSequence, voltajePositivo, voltajeNegativo) {
+    function generarManchester(bits, voltajeAlto, voltajeBajo) {
         const data = [];
-        const labels = [];
-
-        for (let i = 0; i < bitSequence.length; i++) {
-            // Inicio del bit
-            labels.push(`Bit ${i} Start`);
-            
-            if (bitSequence[i] === '1') {
-                // Para un 1: negativo -> positivo
-                data.push(voltajeNegativo);
-                labels.push(`Bit ${i} Mid`);
-                data.push(voltajePositivo);
+        
+        for (let i = 0; i < bits.length; i++) {
+            if (bits[i] === '1') {
+                // Para 1: transición de positivo a negativo
+                data.push(voltajeAlto);
+                data.push(voltajeBajo);
             } else {
-                // Para un 0: positivo -> negativo
-                data.push(voltajePositivo);
-                labels.push(`Bit ${i} Mid`);
-                data.push(voltajeNegativo);
+                // Para 0: transición de negativo a positivo
+                data.push(voltajeBajo);
+                data.push(voltajeAlto);
             }
-
-            // Final del bit
-            labels.push(`Bit ${i} End`);
-            data.push(data[data.length - 1]);
         }
-
-        return { data, labels };
+        return data;
     }
 
-    generarGrafico() {
-        const bitSequence = document.getElementById('inputBits').value;
-        const voltajePositivo = parseFloat(document.getElementById('voltajePositivo').value);
-        const voltajeNegativo = parseFloat(document.getElementById('voltajeNegativo').value);
+    function actualizarGrafico() {
+        const inputBits = document.getElementById('inputBits').value.trim();
+        const voltajeAlto = parseFloat(document.getElementById('voltajeAlto').value);
+        const voltajeBajo = parseFloat(document.getElementById('voltajeBajo').value);
 
-        if (!this.validarEntrada(bitSequence)) return;
+        if (!/^[01]+$/.test(inputBits)) {
+            alert('Por favor, ingrese solo 1s y 0s');
+            return;
+        }
 
-        const { data, labels } = this.generarDatos(bitSequence, voltajePositivo, voltajeNegativo);
+        const manchesterData = generarManchester(inputBits, voltajeAlto, voltajeBajo);
+        // Crear etiquetas duplicadas para mantener la alineación con los datos
+        const labels = inputBits.split('').map(bit => [bit, bit]).flat();
 
-        // Destruir el gráfico anterior si existe
-        if (this.chart) {
-            this.chart.destroy();
+        if (chart) {
+            chart.destroy();
         }
 
         const ctx = document.getElementById('manchesterChart').getContext('2d');
-        this.chart = new Chart(ctx, {
+        chart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Señal [Nombre]',
-                    data: data,
-                    borderColor: '#00FFFF', // Celeste eléctrico
+                    label: 'Señal Manchester',
+                    data: manchesterData,
+                    borderColor: '#00FFFF',  // Color celeste eléctrico
                     borderWidth: 3,
                     fill: false,
                     stepped: true
@@ -84,35 +52,61 @@ class ManchesterEncoder {
             },
             options: {
                 responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        min: Math.min(voltajeNegativo, -1) * 1.2,
-                        max: Math.max(voltajePositivo, 1) * 1.2,
-                        title: {
-                            display: true,
-                            text: 'Voltaje (V)'
-                        },
-                        ticks: {
-                            stepSize: 1
-                        }
-                    },
+                maintainAspectRatio: false,
+                animation: {
                     x: {
-                        title: {
-                            display: true,
-                            text: 'Bits'
+                        type: 'number',
+                        easing: 'linear',
+                        duration: 1500,
+                        from: 0,
+                        delay(ctx) {
+                            return ctx.dataIndex * 150;
                         }
                     }
                 },
                 plugins: {
                     legend: {
-                        display: true
+                        labels: {
+                            font: {
+                                size: 16
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        border: {
+                            color: '#ffffff',
+                            width: 2
+                        },
+                        ticks: {
+                            color: '#ffffff',
+                            font: {
+                                size: 18,
+                                weight: 'bold'
+                            },
+                            // Mostrar solo un número por bit
+                            callback: function(value, index) {
+                                return index % 2 === 0 ? this.getLabelForValue(value) : '';
+                            }
+                        }
                     },
-                    tooltip: {
-                        enabled: true,
-                        callbacks: {
-                            label: function(context) {
-                                return `Voltaje: ${context.raw}V`;
+                    y: {
+                        grid: {
+                            display: false
+                        },
+                        border: {
+                            color: '#ffffff',
+                            width: 2
+                        },
+                        ticks: {
+                            color: '#ffffff',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
                             }
                         }
                     }
@@ -120,7 +114,6 @@ class ManchesterEncoder {
             }
         });
     }
-}
 
-// Inicializar el codificador
-const manchesterEncoder = new ManchesterEncoder();
+    document.getElementById('btnGenerar').addEventListener('click', actualizarGrafico);
+});

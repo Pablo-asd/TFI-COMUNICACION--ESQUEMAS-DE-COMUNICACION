@@ -1,75 +1,47 @@
-class NRZIEncoder {
-    constructor() {
-        this.chart = null;
-        this.initializeEventListeners();
-    }
+document.addEventListener('DOMContentLoaded', function() {
+    let chart = null;
 
-    initializeEventListeners() {
-        document.addEventListener('DOMContentLoaded', () => {
-            const btnGenerar = document.getElementById('btnGenerar');
-            btnGenerar.addEventListener('click', () => this.generarGrafico());
-
-            const inputBits = document.getElementById('inputBits');
-            inputBits.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    this.generarGrafico();
-                }
-            });
-        });
-    }
-
-    validarEntrada(bitSequence) {
-        if (!/^[01]+$/.test(bitSequence)) {
-            alert('Por favor ingrese solo 1s y 0s');
-            return false;
-        }
-        return true;
-    }
-
-    generarDatos(bitSequence, voltajePositivo, voltajeNegativo) {
+    function generarNRZI(bits, voltajeAlto, voltajeBajo) {
         const data = [];
-        const labels = [];
-        
-        // Iniciar con voltaje positivo
-        let currentVoltage = voltajePositivo;
-        data.push(currentVoltage);
+        let nivelActual = voltajeAlto; // Comenzamos con nivel alto
 
-        for (let i = 0; i < bitSequence.length; i++) {
-            labels.push(`Bit ${i}`);
-
-            if (bitSequence[i] === '1') {
-                currentVoltage = (currentVoltage === voltajePositivo) ? 
-                    voltajeNegativo : voltajePositivo;
+        for (let i = 0; i < bits.length; i++) {
+            if (bits[i] === '1') {
+                // Cambiar nivel
+                nivelActual = (nivelActual === voltajeAlto) ? voltajeBajo : voltajeAlto;
             }
-            data.push(currentVoltage);
+            data.push(nivelActual);
         }
-
-        return { data, labels };
+        return data;
     }
 
-    generarGrafico() {
-        const bitSequence = document.getElementById('inputBits').value;
-        const voltajePositivo = parseFloat(document.getElementById('voltajePositivo').value);
-        const voltajeNegativo = parseFloat(document.getElementById('voltajeNegativo').value);
+    function actualizarGrafico() {
+        const inputBits = document.getElementById('inputBits').value.trim();
+        const voltajeAlto = parseFloat(document.getElementById('voltajeAlto').value);
+        const voltajeBajo = parseFloat(document.getElementById('voltajeBajo').value);
 
-        if (!this.validarEntrada(bitSequence)) return;
-
-        const { data, labels } = this.generarDatos(bitSequence, voltajePositivo, voltajeNegativo);
-
-        // Destruir el gráfico anterior si existe
-        if (this.chart) {
-            this.chart.destroy();
+        if (!/^[01]+$/.test(inputBits)) {
+            alert('Por favor, ingrese solo 1s y 0s');
+            return;
         }
 
-        const ctx = document.getElementById('nrzIChart').getContext('2d');
-        this.chart = new Chart(ctx, {
+        const nrziData = generarNRZI(inputBits, voltajeAlto, voltajeBajo);
+        // Crear las etiquetas usando los bits ingresados
+        const labels = inputBits.split('').map((bit) => bit);
+
+        if (chart) {
+            chart.destroy();
+        }
+
+        const ctx = document.getElementById('nrziChart').getContext('2d');
+        chart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Señal [Nombre]',
-                    data: data,
-                    borderColor: '#00FFFF', // Celeste eléctrico
+                    label: 'Señal NRZ-I',
+                    data: nrziData,
+                    borderColor: '#00FFFF',  // Color celeste eléctrico
                     borderWidth: 3,
                     fill: false,
                     stepped: true
@@ -77,32 +49,57 @@ class NRZIEncoder {
             },
             options: {
                 responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        min: Math.min(voltajeNegativo, -1) * 1.2,
-                        max: Math.max(voltajePositivo, 1) * 1.2,
-                        title: {
-                            display: true,
-                            text: 'Voltaje (V)'
-                        }
-                    },
+                maintainAspectRatio: false,
+                animation: {
                     x: {
-                        title: {
-                            display: true,
-                            text: 'Bits'
+                        type: 'number',
+                        easing: 'linear',
+                        duration: 1500,
+                        from: 0,
+                        delay(ctx) {
+                            return ctx.dataIndex * 150;
                         }
                     }
                 },
                 plugins: {
                     legend: {
-                        display: true
+                        labels: {
+                            font: {
+                                size: 16
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        border: {
+                            color: '#ffffff',
+                            width: 2
+                        },
+                        ticks: {
+                            color: '#ffffff',
+                            font: {
+                                size: 18,
+                                weight: 'bold'
+                            }
+                        }
                     },
-                    tooltip: {
-                        enabled: true,
-                        callbacks: {
-                            label: function(context) {
-                                return `Voltaje: ${context.raw}V`;
+                    y: {
+                        grid: {
+                            display: false
+                        },
+                        border: {
+                            color: '#ffffff',
+                            width: 2
+                        },
+                        ticks: {
+                            color: '#ffffff',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
                             }
                         }
                     }
@@ -110,7 +107,6 @@ class NRZIEncoder {
             }
         });
     }
-}
 
-// Inicializar el codificador
-const nrzIEncoder = new NRZIEncoder();
+    document.getElementById('btnGenerar').addEventListener('click', actualizarGrafico);
+});

@@ -1,112 +1,78 @@
-class HDB3Encoder {
-    constructor() {
-        this.chart = null;
-        this.initializeEventListeners();
-    }
+document.addEventListener('DOMContentLoaded', function() {
+    let chart = null;
 
-    initializeEventListeners() {
-        document.addEventListener('DOMContentLoaded', () => {
-            const btnGenerar = document.getElementById('btnGenerar');
-            btnGenerar.addEventListener('click', () => this.generarGrafico());
-
-            const inputBits = document.getElementById('inputBits');
-            inputBits.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    this.generarGrafico();
-                }
-            });
-        });
-    }
-
-    validarEntrada(bitSequence) {
-        if (!/^[01]+$/.test(bitSequence)) {
-            alert('Por favor ingrese solo 1s y 0s');
-            return false;
-        }
-        return true;
-    }
-
-    applyHDB3Substitution(data, labels, isOddPulseCount, currentVoltage, voltajePositivo, voltajeNegativo) {
-        if (isOddPulseCount) {
-            // Reemplazo con 'B00V' para número impar de pulsos previos
-            data.push(currentVoltage, 0, 0, -currentVoltage);
-            labels.push('B (HDB3)', '', '', 'V (HDB3)');
-        } else {
-            // Reemplazo con '000V' para número par de pulsos previos
-            data.push(0, 0, 0, currentVoltage);
-            labels.push('', '', '', 'V (HDB3)');
-        }
-        return -currentVoltage; // Retornar el nuevo voltaje actual
-    }
-
-    generarDatos(bitSequence, voltajePositivo, voltajeNegativo) {
+    function generarHDB3(bits, voltajePositivo, voltajeNegativo) {
         const data = [];
-        const labels = [];
-        let currentVoltage = voltajePositivo;
-        let pulseCount = 0;
-        let consecutiveZeros = 0;
+        let contadorCeros = 0;
+        let ultimoPulsoPositivo = true;
+        let ultimaViolacionPositiva = true;
+        let contadorUnos = 0;
 
-        for (let i = 0; i < bitSequence.length; i++) {
-            labels.push(`Bit ${i} Start`);
-            
-            if (bitSequence[i] === '1') {
-                if (consecutiveZeros === 4) {
-                    currentVoltage = this.applyHDB3Substitution(
-                        data, labels, pulseCount % 2 !== 0, 
-                        currentVoltage, voltajePositivo, voltajeNegativo
-                    );
-                    consecutiveZeros = 0;
+        for (let i = 0; i < bits.length; i++) {
+            if (bits[i] === '0') {
+                contadorCeros++;
+                if (contadorCeros === 4) {
+                    // Insertar violación B00V
+                    data[data.length - 3] = 0;
+                    data[data.length - 2] = 0;
+                    data[data.length - 1] = 0;
+                    
+                    if (contadorUnos % 2 === 0) {
+                        // Necesitamos B00V
+                        data.push(ultimaViolacionPositiva ? voltajeNegativo : voltajePositivo);
+                        data[data.length - 4] = ultimaViolacionPositiva ? voltajeNegativo : voltajePositivo;
+                        ultimaViolacionPositiva = !ultimaViolacionPositiva;
+                    } else {
+                        // Solo necesitamos 000V
+                        data.push(ultimoPulsoPositivo ? voltajePositivo : voltajeNegativo);
+                        ultimoPulsoPositivo = !ultimoPulsoPositivo;
+                    }
+                    contadorCeros = 0;
                 } else {
-                    data.push(currentVoltage);
-                    currentVoltage = -currentVoltage;
-                    consecutiveZeros = 0;
+                    data.push(0);
                 }
-                pulseCount++;
-            } else {
-                data.push(0);
-                consecutiveZeros++;
-
-                if (consecutiveZeros === 4) {
-                    // Retroceder para aplicar la sustitución HDB3
-                    data.splice(-4);
-                    currentVoltage = this.applyHDB3Substitution(
-                        data, labels, pulseCount % 2 !== 0, 
-                        currentVoltage, voltajePositivo, voltajeNegativo
-                    );
-                    consecutiveZeros = 0;
+            } else { // bit es '1'
+                contadorCeros = 0;
+                contadorUnos++;
+                if (ultimoPulsoPositivo) {
+                    data.push(voltajeNegativo);
+                    ultimoPulsoPositivo = false;
+                } else {
+                    data.push(voltajePositivo);
+                    ultimoPulsoPositivo = true;
                 }
             }
-
-            labels.push(`Bit ${i} End`);
-            data.push(data[data.length - 1]);
         }
-
-        return { data, labels };
+        return data;
     }
 
-    generarGrafico() {
-        const bitSequence = document.getElementById('inputBits').value;
+    function actualizarGrafico() {
+        const inputBits = document.getElementById('inputBits').value.trim();
         const voltajePositivo = parseFloat(document.getElementById('voltajePositivo').value);
         const voltajeNegativo = parseFloat(document.getElementById('voltajeNegativo').value);
 
-        if (!this.validarEntrada(bitSequence)) return;
+        if (!/^[01]+$/.test(inputBits)) {
+            alert('Por favor, ingrese solo 1s y 0s');
+            return;
+        }
 
-        const { data, labels } = this.generarDatos(bitSequence, voltajePositivo, voltajeNegativo);
+        const hdb3Data = generarHDB3(inputBits, voltajePositivo, voltajeNegativo);
+        // Crear las etiquetas usando los bits ingresados
+        const labels = inputBits.split('').map((bit) => bit);
 
-        // Destruir el gráfico anterior si existe
-        if (this.chart) {
-            this.chart.destroy();
+        if (chart) {
+            chart.destroy();
         }
 
         const ctx = document.getElementById('hdb3Chart').getContext('2d');
-        this.chart = new Chart(ctx, {
+        chart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Señal [Nombre]',
-                    data: data,
-                    borderColor: '#00FFFF', // Celeste eléctrico
+                    label: 'Señal HDB3',
+                    data: hdb3Data,
+                    borderColor: '#00FFFF',  // Color celeste eléctrico
                     borderWidth: 3,
                     fill: false,
                     stepped: true
@@ -114,35 +80,57 @@ class HDB3Encoder {
             },
             options: {
                 responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        min: Math.min(voltajeNegativo, -1) * 1.2,
-                        max: Math.max(voltajePositivo, 1) * 1.2,
-                        title: {
-                            display: true,
-                            text: 'Voltaje (V)'
-                        },
-                        ticks: {
-                            stepSize: 1
-                        }
-                    },
+                maintainAspectRatio: false,
+                animation: {
                     x: {
-                        title: {
-                            display: true,
-                            text: 'Bits'
+                        type: 'number',
+                        easing: 'linear',
+                        duration: 1500,
+                        from: 0,
+                        delay(ctx) {
+                            return ctx.dataIndex * 150;
                         }
                     }
                 },
                 plugins: {
                     legend: {
-                        display: true
+                        labels: {
+                            font: {
+                                size: 16
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        border: {
+                            color: '#ffffff',
+                            width: 2
+                        },
+                        ticks: {
+                            color: '#ffffff',
+                            font: {
+                                size: 18,
+                                weight: 'bold'
+                            }
+                        }
                     },
-                    tooltip: {
-                        enabled: true,
-                        callbacks: {
-                            label: function(context) {
-                                return `Voltaje: ${context.raw}V`;
+                    y: {
+                        grid: {
+                            display: false
+                        },
+                        border: {
+                            color: '#ffffff',
+                            width: 2
+                        },
+                        ticks: {
+                            color: '#ffffff',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
                             }
                         }
                     }
@@ -150,7 +138,6 @@ class HDB3Encoder {
             }
         });
     }
-}
 
-// Inicializar el codificador
-const hdb3Encoder = new HDB3Encoder();
+    document.getElementById('btnGenerar').addEventListener('click', actualizarGrafico);
+});
