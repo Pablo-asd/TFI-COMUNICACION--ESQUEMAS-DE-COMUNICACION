@@ -1,6 +1,14 @@
 document.addEventListener('DOMContentLoaded', function() {
     let chart = null;
 
+    function calcularLimites(data) {
+        const maxAbs = Math.max(Math.abs(Math.max(...data)), Math.abs(Math.min(...data)));
+        return {
+            min: -maxAbs,
+            max: maxAbs
+        };
+    }
+
     function generarNRZI(bits, voltajeAlto, voltajeBajo) {
         const data = [];
         let nivelActual = voltajeAlto; // Comenzamos con nivel alto
@@ -25,9 +33,9 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        const nrziData = generarNRZI(inputBits, voltajeAlto, voltajeBajo);
-        // Crear las etiquetas usando los bits ingresados
-        const labels = inputBits.split('').map((bit) => bit);
+        const bitsConExtra = inputBits + '0';
+        const nrziData = generarNRZI(bitsConExtra, voltajeAlto, voltajeBajo);
+        const labels = [...inputBits.split(''), 'x'];
 
         if (chart) {
             chart.destroy();
@@ -68,6 +76,20 @@ document.addEventListener('DOMContentLoaded', function() {
                                 size: 16
                             }
                         }
+                    },
+                    annotation: {
+                        drawTime: 'afterDatasetsDraw',
+                        annotations: {
+                            line1: {
+                                type: 'line',
+                                yMin: 0,
+                                yMax: 0,
+                                borderColor: '#ffffff',
+                                borderWidth: 1.5,
+                                borderDash: [5, 5],
+                                drawTime: 'afterDraw'
+                            }
+                        }
                     }
                 },
                 scales: {
@@ -76,8 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             display: false
                         },
                         border: {
-                            color: '#ffffff',
-                            width: 2
+                            display: false
                         },
                         ticks: {
                             color: '#ffffff',
@@ -101,6 +122,14 @@ document.addEventListener('DOMContentLoaded', function() {
                                 size: 16,
                                 weight: 'bold'
                             }
+                        },
+                        min: function(context) {
+                            const limites = calcularLimites(context.chart.data.datasets[0].data);
+                            return limites.min;
+                        },
+                        max: function(context) {
+                            const limites = calcularLimites(context.chart.data.datasets[0].data);
+                            return limites.max;
                         }
                     }
                 }

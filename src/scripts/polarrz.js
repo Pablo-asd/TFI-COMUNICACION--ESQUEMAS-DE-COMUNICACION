@@ -1,6 +1,14 @@
 document.addEventListener('DOMContentLoaded', function() {
     let chart = null;
 
+    function calcularLimites(data) {
+        const maxAbs = Math.max(Math.abs(Math.max(...data)), Math.abs(Math.min(...data)));
+        return {
+            min: -maxAbs,
+            max: maxAbs
+        };
+    }
+
     function generarPolarRZ(bits, voltajeAlto, voltajeBajo) {
         const data = [];
         for (let i = 0; i < bits.length; i++) {
@@ -25,9 +33,12 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        const polarRZData = generarPolarRZ(inputBits, voltajeAlto, voltajeBajo);
-        // Crear etiquetas duplicadas para mantener la alineación con los datos
-        const labels = inputBits.split('').map(bit => [bit, bit]).flat();
+        const bitsConExtra = inputBits + '0';
+        const polarRZData = generarPolarRZ(bitsConExtra, voltajeAlto, voltajeBajo);
+        const labels = bitsConExtra.split('').map(bit => [bit, bit]).flat();
+        // Reemplazar el último par de etiquetas con 'x'
+        labels[labels.length - 2] = 'x';
+        labels[labels.length - 1] = '';
 
         if (chart) {
             chart.destroy();
@@ -68,6 +79,20 @@ document.addEventListener('DOMContentLoaded', function() {
                                 size: 16
                             }
                         }
+                    },
+                    annotation: {
+                        drawTime: 'afterDatasetsDraw',
+                        annotations: {
+                            line1: {
+                                type: 'line',
+                                yMin: 0,
+                                yMax: 0,
+                                borderColor: '#ffffff',
+                                borderWidth: 1.5,
+                                borderDash: [5, 5],
+                                drawTime: 'afterDraw'
+                            }
+                        }
                     }
                 },
                 scales: {
@@ -76,8 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             display: false
                         },
                         border: {
-                            color: '#ffffff',
-                            width: 2
+                            display: false
                         },
                         ticks: {
                             color: '#ffffff',
@@ -85,7 +109,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                 size: 18,
                                 weight: 'bold'
                             },
-                            // Mostrar solo un número por bit
                             callback: function(value, index) {
                                 return index % 2 === 0 ? this.getLabelForValue(value) : '';
                             }
@@ -105,6 +128,14 @@ document.addEventListener('DOMContentLoaded', function() {
                                 size: 16,
                                 weight: 'bold'
                             }
+                        },
+                        min: function(context) {
+                            const limites = calcularLimites(context.chart.data.datasets[0].data);
+                            return limites.min;
+                        },
+                        max: function(context) {
+                            const limites = calcularLimites(context.chart.data.datasets[0].data);
+                            return limites.max;
                         }
                     }
                 }

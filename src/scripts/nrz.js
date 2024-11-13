@@ -1,6 +1,14 @@
 document.addEventListener('DOMContentLoaded', function() {
     let chart = null;
 
+    function calcularLimites(data) {
+        const maxAbs = Math.max(Math.abs(Math.max(...data)), Math.abs(Math.min(...data)));
+        return {
+            min: -maxAbs,
+            max: maxAbs
+        };
+    }
+
     function generarNRZ(bits, voltajeAlto, voltajeBajo) {
         const data = [];
         for (let i = 0; i < bits.length; i++) {
@@ -19,8 +27,9 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        const nrzData = generarNRZ(inputBits, voltajeAlto, voltajeBajo);
-        const labels = inputBits.split('').map((bit) => bit);
+        const bitsConExtra = inputBits + '0';
+        const nrzData = generarNRZ(bitsConExtra, voltajeAlto, voltajeBajo);
+        const labels = [...inputBits.split(''), 'x'];
 
         if (chart) {
             chart.destroy();
@@ -61,6 +70,18 @@ document.addEventListener('DOMContentLoaded', function() {
                                 size: 16
                             }
                         }
+                    },
+                    annotation: {
+                        annotations: {
+                            line1: {
+                                type: 'line',
+                                yMin: 0,
+                                yMax: 0,
+                                borderColor: '#ffffff',
+                                borderWidth: 1.5,
+                                borderDash: [5,5]
+                            }
+                        }
                     }
                 },
                 scales: {
@@ -69,8 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             display: false
                         },
                         border: {
-                            color: '#ffffff',
-                            width: 2
+                            display: false
                         },
                         ticks: {
                             color: '#ffffff',
@@ -94,6 +114,14 @@ document.addEventListener('DOMContentLoaded', function() {
                                 size: 16,
                                 weight: 'bold'
                             }
+                        },
+                        min: function(context) {
+                            const limites = calcularLimites(context.chart.data.datasets[0].data);
+                            return limites.min;
+                        },
+                        max: function(context) {
+                            const limites = calcularLimites(context.chart.data.datasets[0].data);
+                            return limites.max;
                         }
                     }
                 }

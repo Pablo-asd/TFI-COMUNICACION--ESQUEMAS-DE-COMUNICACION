@@ -51,8 +51,8 @@ p {
 /* Estilos para las páginas de gráficas */
 canvas {
     width: 100% !important;
-    height: 800px !important;
-    margin: 40px 0;
+    height: 400px !important;
+    margin: 24px 0;
 }
 
 .controls {

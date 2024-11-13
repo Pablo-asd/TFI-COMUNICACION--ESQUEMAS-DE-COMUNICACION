@@ -1,6 +1,14 @@
 document.addEventListener('DOMContentLoaded', function() {
     let chart = null;
 
+    function calcularLimites(data) {
+        const maxAbs = Math.max(Math.abs(Math.max(...data)), Math.abs(Math.min(...data)));
+        return {
+            min: -maxAbs,
+            max: maxAbs
+        };
+    }
+
     function generarB8ZS(bits, voltajePositivo, voltajeNegativo) {
         const data = [];
         let contadorCeros = 0;
@@ -58,9 +66,9 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        const b8zsData = generarB8ZS(inputBits, voltajePositivo, voltajeNegativo);
-        // Crear las etiquetas usando los bits ingresados
-        const labels = inputBits.split('').map((bit) => bit);
+        const bitsConExtra = inputBits + '0';
+        const b8zsData = generarB8ZS(bitsConExtra, voltajePositivo, voltajeNegativo);
+        const labels = [...inputBits.split(''), 'x'];
 
         if (chart) {
             chart.destroy();
@@ -74,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 datasets: [{
                     label: 'Señal B8ZS',
                     data: b8zsData,
-                    borderColor: '#00FFFF',  // Color celeste eléctrico
+                    borderColor: '#00FFFF',
                     borderWidth: 3,
                     fill: false,
                     stepped: true
@@ -101,6 +109,20 @@ document.addEventListener('DOMContentLoaded', function() {
                                 size: 16
                             }
                         }
+                    },
+                    annotation: {
+                        drawTime: 'afterDatasetsDraw',
+                        annotations: {
+                            line1: {
+                                type: 'line',
+                                yMin: 0,
+                                yMax: 0,
+                                borderColor: '#ffffff',
+                                borderWidth: 1.5,
+                                borderDash: [5, 5],
+                                drawTime: 'afterDraw'
+                            }
+                        }
                     }
                 },
                 scales: {
@@ -109,8 +131,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             display: false
                         },
                         border: {
-                            color: '#ffffff',
-                            width: 2
+                            display: false
                         },
                         ticks: {
                             color: '#ffffff',
@@ -134,6 +155,14 @@ document.addEventListener('DOMContentLoaded', function() {
                                 size: 16,
                                 weight: 'bold'
                             }
+                        },
+                        min: function(context) {
+                            const limites = calcularLimites(context.chart.data.datasets[0].data);
+                            return limites.min;
+                        },
+                        max: function(context) {
+                            const limites = calcularLimites(context.chart.data.datasets[0].data);
+                            return limites.max;
                         }
                     }
                 }

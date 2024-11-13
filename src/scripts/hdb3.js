@@ -56,9 +56,9 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        const hdb3Data = generarHDB3(inputBits, voltajePositivo, voltajeNegativo);
-        // Crear las etiquetas usando los bits ingresados
-        const labels = inputBits.split('').map((bit) => bit);
+        const bitsConExtra = inputBits + '0';
+        const hdb3Data = generarHDB3(bitsConExtra, voltajePositivo, voltajeNegativo);
+        const labels = [...inputBits.split(''), 'x'];
 
         if (chart) {
             chart.destroy();
@@ -99,6 +99,18 @@ document.addEventListener('DOMContentLoaded', function() {
                                 size: 16
                             }
                         }
+                    },
+                    annotation: {
+                        annotations: {
+                            line1: {
+                                type: 'line',
+                                yMin: 0,
+                                yMax: 0,
+                                borderColor: '#ffffff',
+                                borderWidth: 1.5,
+                                borderDash: [5,5]
+                            }
+                        }
                     }
                 },
                 scales: {
@@ -107,8 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             display: false
                         },
                         border: {
-                            color: '#ffffff',
-                            width: 2
+                            display: false
                         },
                         ticks: {
                             color: '#ffffff',
