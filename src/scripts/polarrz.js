@@ -26,15 +26,34 @@ document.addEventListener('DOMContentLoaded', function() {
         const inputBits = document.getElementById('inputBits').value.trim();
         const voltajeInicial = parseFloat(document.getElementById('voltajeInicial').value);
 
+        // Validar entrada
+        if (!inputBits) {
+            alert('Por favor, ingrese una secuencia de bits');
+            return;
+        }
+
         if (!/^[01]+$/.test(inputBits)) {
             alert('Por favor, ingrese solo 1s y 0s');
             return;
         }
 
         const bitsConExtra = inputBits + '0';
-        const polarRZData = generarPolarRZ(bitsConExtra, voltajeInicial);
+        let polarRZData = generarPolarRZ(bitsConExtra, voltajeInicial);
+        
+        // Modificar el último segmento para mostrar solo hasta el punto donde cruza el cero
+        const longitudSegmento = 2; // Cada bit ocupa 2 puntos
+        const ultimoIndice = polarRZData.length - longitudSegmento + Math.floor(longitudSegmento/4); // Mostrar solo 1/4 del último segmento
+        polarRZData = polarRZData.slice(0, ultimoIndice);
+        
+        // Asegurarse de que el último punto sea cero
+        if (polarRZData.length > 0) {
+            polarRZData[polarRZData.length - 1] = 0;
+        }
+        
+        // Generar etiquetas
         const labels = bitsConExtra.split('').map(bit => [bit, bit]).flat();
-        labels[labels.length - 2] = 'x';
+        // Cambiar las últimas dos etiquetas por cadenas vacías
+        labels[labels.length - 2] = '';
         labels[labels.length - 1] = '';
 
         if (chart) chart.destroy();
@@ -42,19 +61,20 @@ document.addEventListener('DOMContentLoaded', function() {
         const ctx = document.getElementById('polarRZChart').getContext('2d');
         const config = createChartConfig(polarRZData, labels, 'Señal Polar RZ');
         
-        // Personalizar la configuración para mostrar solo etiquetas pares
+        // Personalizar la configuración para mostrar solo etiquetas de bits (pares)
         config.options.scales.x.ticks.callback = function(value, index) {
-            return index % 2 === 0 ? this.getLabelForValue(value) : '';
+            // Mostrar solo las etiquetas en posiciones pares y que no sean las últimas dos
+            return index % 2 === 0 && index < labels.length - 2 ? this.getLabelForValue(value) : '';
         };
         
         // Agregar límites dinámicos
         config.options.scales.y.min = function(context) {
             const limites = calcularLimites(context.chart.data.datasets[0].data);
-            return limites.min;
+            return limites.min - 1;
         };
         config.options.scales.y.max = function(context) {
             const limites = calcularLimites(context.chart.data.datasets[0].data);
-            return limites.max;
+            return limites.max + 1;
         };
 
         chart = new Chart(ctx, config);

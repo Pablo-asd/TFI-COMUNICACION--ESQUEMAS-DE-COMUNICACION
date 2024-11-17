@@ -58,6 +58,9 @@ export const createChartConfig = (data, labels, title) => {
                         font: {
                             size: 16,
                             weight: 'bold'
+                        },
+                        callback: function(value, index) {
+                            return labels[index];
                         }
                     },
                     border: {

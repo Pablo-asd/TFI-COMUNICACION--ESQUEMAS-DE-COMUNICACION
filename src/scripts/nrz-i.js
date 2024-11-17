@@ -4,7 +4,6 @@ import { generarNRZI } from '../codificadores/cod_nrz_i.js';
 document.addEventListener('DOMContentLoaded', function() {
     let chart = null;
 
-    // Función para actualizar el tamaño de los contenedores
     function actualizarTamanoGraficos() {
         const width = document.getElementById('chartWidth').value;
         const height = document.getElementById('chartHeight').value;
@@ -24,33 +23,46 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function actualizarGrafico() {
         const inputBits = document.getElementById('inputBits').value.trim();
-        const voltajeAlto = parseFloat(document.getElementById('voltajePositivo').value);
-        const voltajeBajo = parseFloat(document.getElementById('voltajeNegativo').value);
+        const voltajeInicial = parseFloat(document.getElementById('voltajeInicial').value);
+
+        // Validar entrada
+        if (!inputBits) {
+            alert('Por favor, ingrese una secuencia de bits');
+            return;
+        }
 
         if (!/^[01]+$/.test(inputBits)) {
             alert('Por favor, ingrese solo 1s y 0s');
             return;
         }
 
+        // Calcular voltajes automáticamente
+        const voltajeAlto = Math.abs(voltajeInicial);
+        const voltajeBajo = -Math.abs(voltajeInicial);
+
         const bitsConExtra = inputBits + '0';
         const nrziData = generarNRZI(bitsConExtra, voltajeAlto, voltajeBajo);
-        const labels = [...inputBits.split(''), 'x'];
+        const labels = [...inputBits.split(''), ''];
 
-        if (chart) chart.destroy();
+        // Destruir gráfico existente si hay uno
+        if (chart) {
+            chart.destroy();
+        }
 
         const ctx = document.getElementById('nrzIChart').getContext('2d');
         const config = createChartConfig(nrziData, labels, 'Señal NRZ-I');
         
-        // Agregar límites dinámicos
+        // Configurar límites dinámicos
         config.options.scales.y.min = function(context) {
             const limites = calcularLimites(context.chart.data.datasets[0].data);
-            return limites.min;
+            return limites.min - 1;
         };
         config.options.scales.y.max = function(context) {
             const limites = calcularLimites(context.chart.data.datasets[0].data);
-            return limites.max;
+            return limites.max + 1;
         };
 
+        // Crear nuevo gráfico
         chart = new Chart(ctx, config);
     }
 
@@ -65,6 +77,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('chartWidth').addEventListener('input', actualizarTamanoGraficos);
     document.getElementById('chartHeight').addEventListener('input', actualizarTamanoGraficos);
 
-    // Inicializar tamaños
+    // Inicializar tamaños al cargar
     actualizarTamanoGraficos();
 });

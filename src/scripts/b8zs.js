@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const bitsConExtra = inputBits + '0';
         const b8zsData = generarB8ZS(bitsConExtra, voltajeInicial);
-        const labels = [...inputBits.split(''), 'x'];
+        const labels = [...inputBits.split(''), ''];
 
         if (chart) chart.destroy();
 

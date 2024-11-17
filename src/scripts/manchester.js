@@ -4,7 +4,6 @@ import { generarManchester } from '../codificadores/cod_manchester.js';
 document.addEventListener('DOMContentLoaded', function() {
     let chart = null;
 
-    // Función para actualizar el tamaño de los contenedores
     function actualizarTamanoGraficos() {
         const width = document.getElementById('chartWidth').value;
         const height = document.getElementById('chartHeight').value;
@@ -18,7 +17,6 @@ document.addEventListener('DOMContentLoaded', function() {
         timeContainer.style.width = `${width}%`;
         timeContainer.style.height = `${height}px`;
 
-        // Si el gráfico existe, actualizarlo
         if (chart) chart.resize();
     }
 
@@ -32,9 +30,20 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const bitsConExtra = inputBits + '0';
-        const manchesterData = generarManchester(bitsConExtra, voltajeInicial);
+        let manchesterData = generarManchester(bitsConExtra, voltajeInicial);
+        
+        // Modificar el último segmento para mostrar solo hasta el punto donde cruza el cero
+        const longitudSegmento = 2; // Cada bit ocupa 2 puntos
+        const ultimoIndice = manchesterData.length - longitudSegmento + Math.floor(longitudSegmento/4);
+        manchesterData = manchesterData.slice(0, ultimoIndice);
+        
+        // Asegurarse de que el último punto sea cero
+        if (manchesterData.length > 0) {
+            manchesterData[manchesterData.length - 1] = 0;
+        }
+
         const labels = bitsConExtra.split('').map(bit => [bit, bit]).flat();
-        labels[labels.length - 2] = 'x';
+        labels[labels.length - 2] = '';
         labels[labels.length - 1] = '';
 
         if (chart) chart.destroy();
@@ -44,17 +53,17 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Personalizar la configuración para mostrar solo etiquetas pares
         config.options.scales.x.ticks.callback = function(value, index) {
-            return index % 2 === 0 ? this.getLabelForValue(value) : '';
+            return index % 2 === 0 && index < labels.length - 2 ? this.getLabelForValue(value) : '';
         };
         
         // Agregar límites dinámicos
         config.options.scales.y.min = function(context) {
             const limites = calcularLimites(context.chart.data.datasets[0].data);
-            return limites.min;
+            return limites.min - 1;
         };
         config.options.scales.y.max = function(context) {
             const limites = calcularLimites(context.chart.data.datasets[0].data);
-            return limites.max;
+            return limites.max + 1;
         };
 
         chart = new Chart(ctx, config);
@@ -66,11 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     document.getElementById('btnGenerar').addEventListener('click', actualizarGrafico);
-    
-    // Event Listeners para los controles de tamaño
     document.getElementById('chartWidth').addEventListener('input', actualizarTamanoGraficos);
     document.getElementById('chartHeight').addEventListener('input', actualizarTamanoGraficos);
-
-    // Inicializar tamaños
     actualizarTamanoGraficos();
 });
