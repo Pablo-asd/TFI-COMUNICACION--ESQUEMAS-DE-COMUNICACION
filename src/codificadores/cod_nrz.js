@@ -1,7 +1,15 @@
-export const generarNRZ = (bits, voltajeAlto, voltajeBajo) => {
-    const data = [];
+export function generarNRZ(bits, voltajeAlto, voltajeBajo, voltajeInicial) {
+    const nrzData = [];
+    let voltajeActual = voltajeInicial;
+
     for (let i = 0; i < bits.length; i++) {
-        data.push(bits[i] === '1' ? voltajeAlto : voltajeBajo);
+        if (bits[i] === '1') {
+            voltajeActual = voltajeInicial >= 0 ? voltajeAlto : voltajeBajo;
+        } else {
+            voltajeActual = voltajeInicial >= 0 ? voltajeBajo : voltajeAlto;
+        }
+        nrzData.push(voltajeActual);
     }
-    return data;
-}; 
+
+    return nrzData;
+} 

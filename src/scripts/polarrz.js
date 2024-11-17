@@ -4,10 +4,27 @@ import { generarPolarRZ } from '../codificadores/cod_polar_rz.js';
 document.addEventListener('DOMContentLoaded', function() {
     let chart = null;
 
+    // Función para actualizar el tamaño de los contenedores
+    function actualizarTamanoGraficos() {
+        const width = document.getElementById('chartWidth').value;
+        const height = document.getElementById('chartHeight').value;
+        
+        // Actualizar valores mostrados
+        document.getElementById('widthValue').textContent = `${width}%`;
+        document.getElementById('heightValue').textContent = `${height}px`;
+        
+        // Actualizar contenedor
+        const timeContainer = document.getElementById('timeChartContainer');
+        timeContainer.style.width = `${width}%`;
+        timeContainer.style.height = `${height}px`;
+
+        // Si el gráfico existe, actualizarlo
+        if (chart) chart.resize();
+    }
+
     function actualizarGrafico() {
         const inputBits = document.getElementById('inputBits').value.trim();
-        const voltajeAlto = parseFloat(document.getElementById('voltajePositivo').value);
-        const voltajeBajo = parseFloat(document.getElementById('voltajeNegativo').value);
+        const voltajeInicial = parseFloat(document.getElementById('voltajeInicial').value);
 
         if (!/^[01]+$/.test(inputBits)) {
             alert('Por favor, ingrese solo 1s y 0s');
@@ -15,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const bitsConExtra = inputBits + '0';
-        const polarRZData = generarPolarRZ(bitsConExtra, voltajeAlto, voltajeBajo);
+        const polarRZData = generarPolarRZ(bitsConExtra, voltajeInicial);
         const labels = bitsConExtra.split('').map(bit => [bit, bit]).flat();
         labels[labels.length - 2] = 'x';
         labels[labels.length - 1] = '';
@@ -43,9 +60,17 @@ document.addEventListener('DOMContentLoaded', function() {
         chart = new Chart(ctx, config);
     }
 
+    // Event Listeners
     document.getElementById('btnVolver').addEventListener('click', () => {
         window.location.href = '../../index.html';
     });
 
     document.getElementById('btnGenerar').addEventListener('click', actualizarGrafico);
+    
+    // Event Listeners para los controles de tamaño
+    document.getElementById('chartWidth').addEventListener('input', actualizarTamanoGraficos);
+    document.getElementById('chartHeight').addEventListener('input', actualizarTamanoGraficos);
+
+    // Inicializar tamaños
+    actualizarTamanoGraficos();
 });

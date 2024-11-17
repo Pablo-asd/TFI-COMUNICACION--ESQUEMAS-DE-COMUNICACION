@@ -1,46 +1,38 @@
-export const generarB8ZS = (bits, voltajePositivo, voltajeNegativo) => {
-    const data = [];
+export function generarB8ZS(bits, voltajeInicial) {
+    const b8zsData = [];
+    const voltajeAlto = Math.abs(voltajeInicial);
+    const voltajeBajo = -Math.abs(voltajeInicial);
+    let ultimaPolaridad = voltajeInicial >= 0 ? voltajeAlto : voltajeBajo;
     let contadorCeros = 0;
-    let ultimoPulsoPositivo = true;
 
     for (let i = 0; i < bits.length; i++) {
         if (bits[i] === '0') {
             contadorCeros++;
+            
             if (contadorCeros === 8) {
-                // Reemplazar los últimos 8 ceros con la secuencia B8ZS
-                data[data.length - 7] = 0;
-                data[data.length - 6] = 0;
-                data[data.length - 5] = 0;
+                // Eliminar los últimos 5 ceros agregados
+                for (let j = 0; j < 5; j++) {
+                    b8zsData.pop();
+                }
                 
-                if (ultimoPulsoPositivo) {
-                    // 000+-0-+
-                    data[data.length - 4] = voltajePositivo;
-                    data[data.length - 3] = voltajeNegativo;
-                    data[data.length - 2] = 0;
-                    data[data.length - 1] = voltajeNegativo;
-                    data.push(voltajePositivo);
+                // Secuencia B8ZS: 000VB0VB
+                if (ultimaPolaridad === voltajeAlto) {
+                    b8zsData.push(0, 0, 0, voltajeBajo, voltajeAlto, 0, voltajeBajo, voltajeAlto);
+                    ultimaPolaridad = voltajeAlto;
                 } else {
-                    // 000-+0+-
-                    data[data.length - 4] = voltajeNegativo;
-                    data[data.length - 3] = voltajePositivo;
-                    data[data.length - 2] = 0;
-                    data[data.length - 1] = voltajePositivo;
-                    data.push(voltajeNegativo);
+                    b8zsData.push(0, 0, 0, voltajeAlto, voltajeBajo, 0, voltajeAlto, voltajeBajo);
+                    ultimaPolaridad = voltajeBajo;
                 }
                 contadorCeros = 0;
             } else {
-                data.push(0);
+                b8zsData.push(0);
             }
         } else { // bit es '1'
+            b8zsData.push(ultimaPolaridad);
+            ultimaPolaridad = (ultimaPolaridad === voltajeAlto) ? voltajeBajo : voltajeAlto;
             contadorCeros = 0;
-            if (ultimoPulsoPositivo) {
-                data.push(voltajeNegativo);
-                ultimoPulsoPositivo = false;
-            } else {
-                data.push(voltajePositivo);
-                ultimoPulsoPositivo = true;
-            }
         }
     }
-    return data;
-}; 
+
+    return b8zsData;
+} 

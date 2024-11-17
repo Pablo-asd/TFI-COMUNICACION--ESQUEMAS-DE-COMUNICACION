@@ -1,44 +1,43 @@
-export const generarHDB3 = (bits, voltajePositivo, voltajeNegativo) => {
-    const data = [];
+export function generarHDB3(bits, voltajeInicial) {
+    const hdb3Data = [];
+    const voltajeAlto = Math.abs(voltajeInicial);
+    const voltajeBajo = -Math.abs(voltajeInicial);
+    let ultimaPolaridad = voltajeInicial >= 0 ? voltajeAlto : voltajeBajo;
     let contadorCeros = 0;
-    let ultimoPulsoPositivo = true;
-    let ultimaViolacionPositiva = true;
-    let contadorUnos = 0;
+    let contadorPulsos = 0;
 
     for (let i = 0; i < bits.length; i++) {
         if (bits[i] === '0') {
             contadorCeros++;
+            
             if (contadorCeros === 4) {
-                // Insertar violación B00V
-                data[data.length - 3] = 0;
-                data[data.length - 2] = 0;
-                data[data.length - 1] = 0;
-                
-                if (contadorUnos % 2 === 0) {
-                    // Necesitamos B00V
-                    data.push(ultimaViolacionPositiva ? voltajeNegativo : voltajePositivo);
-                    data[data.length - 4] = ultimaViolacionPositiva ? voltajeNegativo : voltajePositivo;
-                    ultimaViolacionPositiva = !ultimaViolacionPositiva;
-                } else {
-                    // Solo necesitamos 000V
-                    data.push(ultimoPulsoPositivo ? voltajePositivo : voltajeNegativo);
-                    ultimoPulsoPositivo = !ultimoPulsoPositivo;
+                // Eliminar los últimos 3 ceros agregados
+                for (let j = 0; j < 3; j++) {
+                    hdb3Data.pop();
                 }
+                
+                // Aplicar regla HDB3
+                if (contadorPulsos % 2 === 0) {
+                    // B00V: Violación con la misma polaridad que el último pulso
+                    hdb3Data.push(ultimaPolaridad, 0, 0, ultimaPolaridad);
+                } else {
+                    // 000V: Violación con polaridad opuesta
+                    let polaridadViolacion = (ultimaPolaridad === voltajeAlto) ? voltajeBajo : voltajeAlto;
+                    hdb3Data.push(0, 0, 0, polaridadViolacion);
+                    ultimaPolaridad = polaridadViolacion;
+                }
+                contadorPulsos++;
                 contadorCeros = 0;
             } else {
-                data.push(0);
+                hdb3Data.push(0);
             }
         } else { // bit es '1'
+            hdb3Data.push(ultimaPolaridad);
+            ultimaPolaridad = (ultimaPolaridad === voltajeAlto) ? voltajeBajo : voltajeAlto;
+            contadorPulsos++;
             contadorCeros = 0;
-            contadorUnos++;
-            if (ultimoPulsoPositivo) {
-                data.push(voltajeNegativo);
-                ultimoPulsoPositivo = false;
-            } else {
-                data.push(voltajePositivo);
-                ultimoPulsoPositivo = true;
-            }
         }
     }
-    return data;
-}; 
+
+    return hdb3Data;
+} 

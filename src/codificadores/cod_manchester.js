@@ -1,16 +1,17 @@
-export const generarManchester = (bits, voltajeAlto, voltajeBajo) => {
-    const data = [];
+export function generarManchester(bits, voltajeInicial) {
+    const manchesterData = [];
+    const voltajeAlto = Math.abs(voltajeInicial);
+    const voltajeBajo = -Math.abs(voltajeInicial);
     
     for (let i = 0; i < bits.length; i++) {
         if (bits[i] === '1') {
-            // Para 1: transición de positivo a negativo
-            data.push(voltajeAlto);
-            data.push(voltajeBajo);
+            manchesterData.push(voltajeInicial >= 0 ? voltajeBajo : voltajeAlto);
+            manchesterData.push(voltajeInicial >= 0 ? voltajeAlto : voltajeBajo);
         } else {
-            // Para 0: transición de negativo a positivo
-            data.push(voltajeBajo);
-            data.push(voltajeAlto);
+            manchesterData.push(voltajeInicial >= 0 ? voltajeAlto : voltajeBajo);
+            manchesterData.push(voltajeInicial >= 0 ? voltajeBajo : voltajeAlto);
         }
     }
-    return data;
-}; 
+
+    return manchesterData;
+} 

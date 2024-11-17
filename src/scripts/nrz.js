@@ -6,8 +6,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function actualizarGrafico() {
         const inputBits = document.getElementById('inputBits').value.trim();
-        const voltajeAlto = parseFloat(document.getElementById('voltajeAlto').value);
-        const voltajeBajo = parseFloat(document.getElementById('voltajeBajo').value);
+        const voltajeInicial = parseFloat(document.getElementById('voltajeInicial').value);
+        
+        // Calcular voltajes automáticamente
+        const voltajeAlto = Math.abs(voltajeInicial);
+        const voltajeBajo = -Math.abs(voltajeInicial);
 
         if (!/^[01]+$/.test(inputBits)) {
             alert('Por favor, ingrese solo 1s y 0s');
@@ -15,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const bitsConExtra = inputBits + '0';
-        const nrzData = generarNRZ(bitsConExtra, voltajeAlto, voltajeBajo);
+        const nrzData = generarNRZ(bitsConExtra, voltajeAlto, voltajeBajo, voltajeInicial);
         const labels = [...inputBits.split(''), 'x'];
 
         if (chart) chart.destroy();
@@ -26,19 +29,27 @@ document.addEventListener('DOMContentLoaded', function() {
         // Agregar límites dinámicos
         config.options.scales.y.min = function(context) {
             const limites = calcularLimites(context.chart.data.datasets[0].data);
-            return limites.min;
+            return limites.min - 1; // Agregar un poco de margen
         };
         config.options.scales.y.max = function(context) {
             const limites = calcularLimites(context.chart.data.datasets[0].data);
-            return limites.max;
+            return limites.max + 1; // Agregar un poco de margen
         };
 
         chart = new Chart(ctx, config);
     }
 
+    // Event Listeners
     document.getElementById('btnVolver').addEventListener('click', () => {
         window.location.href = '../../index.html';
     });
 
     document.getElementById('btnGenerar').addEventListener('click', actualizarGrafico);
+    
+    // Event Listeners para los controles de tamaño
+    document.getElementById('chartWidth').addEventListener('input', actualizarTamanoGraficos);
+    document.getElementById('chartHeight').addEventListener('input', actualizarTamanoGraficos);
+
+    // Inicializar tamaños
+    actualizarTamanoGraficos();
 });

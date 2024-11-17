@@ -1,116 +1,124 @@
-body {
-    background-color: #000000;
-    color: #ffffff;
+/* Estilos base */
+* {
     margin: 0;
-    padding: 20px;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
     font-family: Arial, sans-serif;
+    background-color: #1a1a1a;
+    color: white;
+    min-height: 100vh;
+    padding: 20px;
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
+    padding: 15px;
+}
+
+/* Estilos para la página principal */
+.button-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Estilos para las páginas de codificación */
+.control-group {
+    margin: 15px 0;
     text-align: center;
+    color: white;
 }
 
-h1, h2 {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-h1 {
-    font-size: 32px;
-}
-
-h2 {
-    font-size: 24px;
-}
-
-p {
-    font-size: 18px;
-    margin-bottom: 30px;
-}
-
-.boton {
+.control-group label {
     display: inline-block;
-    background-color: #000000;
-    color: #ffffff;
-    padding: 12px 24px;
-    margin: 10px;
-    text-decoration: none;
-    border: 2px solid #00FFFF;
-    border-radius: 5px;
-    font-size: 16px;
-    transition: all 0.3s ease;
+    margin-right: 10px;
+    min-width: 120px;
 }
 
-.boton:hover {
-    background-color: #00FFFF;
-    color: #000000;
-}
-
-/* Estilos para las páginas de gráficas */
-canvas {
-    width: 100% !important;
-    height: 400px !important;
-    margin: 24px 0;
-}
-
-.controls {
-    margin: 20px 0;
-    text-align: center;
-}
-
-input[type="text"],
-input[type="number"] {
-    background-color: #000000;
-    color: #ffffff;
-    border: 1px solid #00FFFF;
-    padding: 8px 12px;
+.control-group input {
+    padding: 5px;
     margin: 5px;
+    background-color: #2a2a2a;
+    border: 1px solid #4CAF50;
+    color: white;
     border-radius: 4px;
-    font-size: 16px;
 }
 
+.control-group input[type="range"] {
+    width: 200px;
+}
+
+/* Botones */
 button {
-    background-color: #000000;
-    color: #ffffff;
-    border: 2px solid #00FFFF;
-    padding: 10px 20px;
-    margin: 10px;
-    border-radius: 4px;
-    cursor: pointer;
+    padding: 15px 30px;
     font-size: 16px;
-    transition: all 0.3s ease;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
 button:hover {
-    background-color: #00FFFF;
-    color: #000000;
+    background-color: #45a049;
 }
 
-.voltage-controls {
-    margin: 15px 0;
-}
-
-label {
-    color: #ffffff;
-    margin: 0 10px;
-    font-size: 16px;
-} 
-
-#btnVolver {
-    background-color: #000000;
-    color: #ffffff;
-    border: 2px solid #00FFFF;
-    padding: 10px 20px;
-    margin: 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
+/* Contenedor del gráfico */
+.chart-container {
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #2a2a2a;
+    border-radius: 8px;
     transition: all 0.3s ease;
 }
 
-#btnVolver:hover {
-    background-color: #00FFFF;
-    color: #000000;
+/* Títulos */
+h1 {
+    text-align: center;
+    color: #4CAF50;
+    margin: 20px 0;
+}
+
+/* Media queries */
+@media screen and (max-width: 768px) {
+    .button-container {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+
+    .control-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .control-group label {
+        margin-bottom: 5px;
+    }
+
+    .control-group input[type="range"] {
+        width: 80%;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+
+    button {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+
+    .chart-container {
+        padding: 10px;
+    }
 }

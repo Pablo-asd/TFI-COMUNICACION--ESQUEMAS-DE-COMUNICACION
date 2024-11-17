@@ -1,19 +1,17 @@
-export const generarAMI = (bits, voltajePositivo, voltajeNegativo) => {
-    const data = [];
-    let ultimoPulsoPositivo = true;
-    
+export function generarAMI(bits, voltajeInicial) {
+    const amiData = [];
+    const voltajeAlto = Math.abs(voltajeInicial);
+    const voltajeBajo = -Math.abs(voltajeInicial);
+    let ultimaPolaridad = voltajeInicial >= 0 ? voltajeAlto : voltajeBajo;
+
     for (let i = 0; i < bits.length; i++) {
         if (bits[i] === '1') {
-            if (ultimoPulsoPositivo) {
-                data.push(voltajeNegativo);
-                ultimoPulsoPositivo = false;
-            } else {
-                data.push(voltajePositivo);
-                ultimoPulsoPositivo = true;
-            }
+            amiData.push(ultimaPolaridad);
+            ultimaPolaridad = (ultimaPolaridad === voltajeAlto) ? voltajeBajo : voltajeAlto;
         } else {
-            data.push(0);
+            amiData.push(0);
         }
     }
-    return data;
-}; 
+
+    return amiData;
+} 
