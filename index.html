@@ -4,21 +4,71 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Codificación de Línea</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="src/styles/styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Codificación de Línea</h1>
-        <div class="button-container">
-            <button onclick="window.location.href='src/pages/nrz.html'">NRZ</button>
-            <button onclick="window.location.href='src/pages/nrz-i.html'">NRZ-I</button>
-            <button onclick="window.location.href='src/pages/polarrz.html'">Polar RZ</button>
-            <button onclick="window.location.href='src/pages/manchester.html'">Manchester</button>
-            <button onclick="window.location.href='src/pages/manchesterdiferencial.html'">Manchester Diferencial</button>
-            <button onclick="window.location.href='src/pages/ami.html'">AMI</button>
-            <button onclick="window.location.href='src/pages/b8zs.html'">B8ZS</button>
-            <button onclick="window.location.href='src/pages/hdb3.html'">HDB3</button>
+    <div class="container py-5">
+        <h1 class="text-center text-white mb-5">Codificación de Línea</h1>
+        
+        <div class="card bg-dark border-primary">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6 col-lg-4">
+                        <button onclick="window.location.href='src/pages/nrz.html'" 
+                                class="btn btn-primary w-100 py-3">
+                            NRZ
+                        </button>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <button onclick="window.location.href='src/pages/nrz-i.html'" 
+                                class="btn btn-primary w-100 py-3">
+                            NRZ-I
+                        </button>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <button onclick="window.location.href='src/pages/polarrz.html'" 
+                                class="btn btn-primary w-100 py-3">
+                            Polar RZ
+                        </button>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <button onclick="window.location.href='src/pages/manchester.html'" 
+                                class="btn btn-primary w-100 py-3">
+                            Manchester
+                        </button>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <button onclick="window.location.href='src/pages/manchesterdiferencial.html'" 
+                                class="btn btn-primary w-100 py-3">
+                            Manchester Diferencial
+                        </button>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <button onclick="window.location.href='src/pages/ami.html'" 
+                                class="btn btn-primary w-100 py-3">
+                            AMI
+                        </button>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <button onclick="window.location.href='src/pages/b8zs.html'" 
+                                class="btn btn-primary w-100 py-3">
+                            B8ZS
+                        </button>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <button onclick="window.location.href='src/pages/hdb3.html'" 
+                                class="btn btn-primary w-100 py-3">
+                            HDB3
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

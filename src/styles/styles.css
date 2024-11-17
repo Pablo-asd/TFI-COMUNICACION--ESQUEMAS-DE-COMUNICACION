@@ -1,124 +1,90 @@
-/* Estilos base */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+:root {
+    --electric-blue: #00e1ff;
+    --dark-gray: #1a1a1a;
+    --darker-gray: #121212;
+    --light-text: #ffffff;
 }
 
 body {
-    font-family: Arial, sans-serif;
-    background-color: #1a1a1a;
-    color: white;
+    background-color: var(--darker-gray);
     min-height: 100vh;
-    padding: 20px;
 }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 15px;
+/* Personalización de elementos Bootstrap */
+.card {
+    background-color: var(--dark-gray) !important;
+    border-color: var(--electric-blue) !important;
 }
 
-/* Estilos para la página principal */
-.button-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    padding: 20px;
-    max-width: 800px;
-    margin: 0 auto;
+.btn-primary {
+    background-color: var(--electric-blue) !important;
+    border-color: var(--electric-blue) !important;
+    color: var(--darker-gray) !important;
 }
 
-/* Estilos para las páginas de codificación */
-.control-group {
-    margin: 15px 0;
-    text-align: center;
-    color: white;
+.btn-primary:hover {
+    opacity: 0.9;
 }
 
-.control-group label {
-    display: inline-block;
-    margin-right: 10px;
-    min-width: 120px;
+.btn-secondary {
+    background-color: #333 !important;
+    border-color: #333 !important;
 }
 
-.control-group input {
-    padding: 5px;
-    margin: 5px;
-    background-color: #2a2a2a;
-    border: 1px solid #4CAF50;
-    color: white;
+.form-control {
+    background-color: var(--darker-gray) !important;
+    border-color: var(--electric-blue) !important;
+    color: var(--light-text) !important;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 0.25rem rgba(0, 255, 0, 0.25) !important;
+}
+
+/* Personalización de los range inputs */
+.custom-range {
+    height: 8px;
+    background-color: var(--dark-gray);
     border-radius: 4px;
 }
 
-.control-group input[type="range"] {
-    width: 200px;
+.form-range::-webkit-slider-thumb {
+    background: var(--electric-blue) !important;
 }
 
-/* Botones */
-button {
-    padding: 15px 30px;
-    font-size: 16px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+.form-range::-moz-range-thumb {
+    background: var(--electric-blue) !important;
 }
 
-button:hover {
-    background-color: #45a049;
+.form-range::-ms-thumb {
+    background: var(--electric-blue) !important;
 }
 
-/* Contenedor del gráfico */
+/* Personalización del gráfico */
 .chart-container {
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #2a2a2a;
+    background-color: var(--dark-gray);
     border-radius: 8px;
-    transition: all 0.3s ease;
+    padding: 15px;
+    margin-top: 20px;
 }
 
-/* Títulos */
-h1 {
-    text-align: center;
-    color: #4CAF50;
-    margin: 20px 0;
-}
-
-/* Media queries */
-@media screen and (max-width: 768px) {
-    .button-container {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    }
-
-    .control-group {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .control-group label {
-        margin-bottom: 5px;
-    }
-
-    .control-group input[type="range"] {
-        width: 80%;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    body {
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
         padding: 10px;
     }
-
-    button {
-        padding: 12px 20px;
-        font-size: 14px;
+    
+    .card {
+        margin-bottom: 15px;
     }
-
-    .chart-container {
-        padding: 10px;
+    
+    .btn {
+        width: 100%;
+        margin: 5px 0;
     }
+}
+
+/* Chart.js personalización */
+canvas {
+    border-radius: 4px;
 }

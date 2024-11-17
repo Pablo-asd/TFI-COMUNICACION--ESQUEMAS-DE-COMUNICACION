@@ -15,20 +15,16 @@ export const createChartConfig = (data, labels, title) => {
                 {
                     label: title,
                     data: data,
-                    borderColor: '#4CAF50',
-                    borderWidth: 2,
-                    pointRadius: 0,
+                    borderColor: '#00ffff',
+                    backgroundColor: '#00ffff',
+                    borderWidth: 4,
+                    pointRadius: 6,
+                    pointBackgroundColor: '#00ffff',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
                     fill: false,
                     stepped: true,
-                },
-                {
-                    label: 'Línea Base',
-                    data: new Array(labels.length).fill(0),
-                    borderColor: 'rgba(255, 255, 255, 0.2)',
-                    borderWidth: 1,
-                    pointRadius: 0,
-                    borderDash: [5, 5],
-                    fill: false,
+                    tension: 0,
                 }
             ]
         },
@@ -36,32 +32,83 @@ export const createChartConfig = (data, labels, title) => {
             responsive: true,
             maintainAspectRatio: false,
             animation: {
-                duration: 0
+                duration: 1500,
+                easing: 'easeInOutQuart',
+                x: {
+                    type: 'number',
+                    easing: 'linear',
+                    duration: 1500,
+                    from: NaN,
+                    delay(ctx) {
+                        if (ctx.type !== 'data' || ctx.xStarted) {
+                            return 0;
+                        }
+                        ctx.xStarted = true;
+                        return ctx.index * 100;
+                    }
+                }
             },
             scales: {
                 x: {
                     grid: {
-                        color: 'rgba(255, 255, 255, 0.1)'
+                        display: false
                     },
                     ticks: {
-                        color: 'white'
+                        color: 'white',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        }
+                    },
+                    border: {
+                        display: false
                     }
                 },
                 y: {
                     grid: {
-                        color: 'rgba(255, 255, 255, 0.1)'
+                        color: 'rgba(255, 255, 255, 0.1)',
+                        drawOnChartArea: false
                     },
                     ticks: {
-                        color: 'white'
+                        color: 'white',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        }
+                    },
+                    border: {
+                        display: true,
+                        width: 2
                     }
                 }
             },
             plugins: {
+                annotation: {
+                    annotations: {
+                        zeroline: {
+                            type: 'line',
+                            yMin: 0,
+                            yMax: 0,
+                            borderColor: 'rgba(255, 255, 255, 0.5)',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            drawTime: 'beforeDatasetsDraw'
+                        }
+                    }
+                },
                 legend: {
                     labels: {
-                        color: 'white'
+                        color: 'white',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        }
                     }
                 }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'index'
             }
         }
     };
