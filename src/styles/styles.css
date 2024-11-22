@@ -1,90 +1,98 @@
-:root {
-    --electric-blue: #00e1ff;
-    --dark-gray: #1a1a1a;
-    --darker-gray: #121212;
-    --light-text: #ffffff;
-}
-
 body {
-    background-color: var(--darker-gray);
+    background-color: #212529;
     min-height: 100vh;
 }
 
-/* Personalización de elementos Bootstrap */
-.card {
-    background-color: var(--dark-gray) !important;
-    border-color: var(--electric-blue) !important;
+.chart-container {
+    position: relative;
+    margin: auto;
+    height: 400px;
+    width: 80%;
 }
 
+/* Estilos para los títulos */
+.title-description {
+    font-size: 2.5rem;
+    font-weight: 300;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    padding: 10px;
+    border-bottom: 2px solid #00ffff;
+    display: inline-block;
+}
+
+.author-name {
+    font-size: 2.5rem;
+    font-style: italic;
+    color: #00ffff;
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+
+/* Estilos para botones */
 .btn-primary {
-    background-color: var(--electric-blue) !important;
-    border-color: var(--electric-blue) !important;
-    color: var(--darker-gray) !important;
+    background-color: #00ffff;
+    border-color: #00ffff;
+    color: #212529;
+    transition: all 0.3s ease;
+    font-weight: 500;
 }
 
 .btn-primary:hover {
-    opacity: 0.9;
+    background-color: #00cccc;
+    border-color: #00cccc;
+    color: #212529;
 }
 
-.btn-secondary {
-    background-color: #333 !important;
-    border-color: #333 !important;
-}
-
+/* Estilos para formularios */
 .form-control {
-    background-color: var(--darker-gray) !important;
-    border-color: var(--electric-blue) !important;
-    color: var(--light-text) !important;
+    background-color: #212529 !important;
+    border: 2px solid #00ffff !important;
+    color: #ffffff !important;
 }
 
 .form-control:focus {
-    box-shadow: 0 0 0 0.25rem rgba(0, 255, 0, 0.25) !important;
+    background-color: #212529 !important;
+    border-color: #00ffff !important;
+    box-shadow: 0 0 0 0.25rem rgba(0, 255, 255, 0.25);
+    color: #ffffff !important;
 }
 
-/* Personalización de los range inputs */
-.custom-range {
-    height: 8px;
-    background-color: var(--dark-gray);
-    border-radius: 4px;
+.form-control::placeholder {
+    color: #808080 !important;
 }
 
-.form-range::-webkit-slider-thumb {
-    background: var(--electric-blue) !important;
+/* Estilos para range sliders */
+.custom-range::-webkit-slider-thumb {
+    background: #00ffff;
 }
 
-.form-range::-moz-range-thumb {
-    background: var(--electric-blue) !important;
+.custom-range::-moz-range-thumb {
+    background: #00ffff;
 }
 
-.form-range::-ms-thumb {
-    background: var(--electric-blue) !important;
+.custom-range::-ms-thumb {
+    background: #00ffff;
 }
 
-/* Personalización del gráfico */
-.chart-container {
-    background-color: var(--dark-gray);
-    border-radius: 8px;
-    padding: 15px;
-    margin-top: 20px;
+/* Estilos para bordes de cards */
+.card.border-primary {
+    border-color: #00ffff !important;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .container {
-        padding: 10px;
-    }
-    
-    .card {
-        margin-bottom: 15px;
-    }
-    
-    .btn {
-        width: 100%;
-        margin: 5px 0;
-    }
+/* Estilos para radio buttons */
+.form-check-input:checked {
+    background-color: #00ffff;
+    border-color: #00ffff;
 }
 
-/* Chart.js personalización */
-canvas {
-    border-radius: 4px;
+.form-check-input:focus {
+    border-color: #00ffff;
+    box-shadow: 0 0 0 0.25rem rgba(0, 255, 255, 0.25);
+}
+
+/* Estilos para labels */
+.form-label {
+    color: #00ffff !important;
 }

@@ -80,6 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('chartWidth').addEventListener('input', actualizarTamanoGraficos);
     document.getElementById('chartHeight').addEventListener('input', actualizarTamanoGraficos);
 
+    document.getElementById('chartWidth').value = 100;
     // Inicializar tamaños al cargar
     actualizarTamanoGraficos();
 });

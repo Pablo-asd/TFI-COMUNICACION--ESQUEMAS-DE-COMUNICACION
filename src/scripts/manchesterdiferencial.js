@@ -77,5 +77,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('btnGenerar').addEventListener('click', actualizarGrafico);
     document.getElementById('chartWidth').addEventListener('input', actualizarTamanoGraficos);
     document.getElementById('chartHeight').addEventListener('input', actualizarTamanoGraficos);
+    document.getElementById('chartWidth').value = 100;
     actualizarTamanoGraficos();
 });
