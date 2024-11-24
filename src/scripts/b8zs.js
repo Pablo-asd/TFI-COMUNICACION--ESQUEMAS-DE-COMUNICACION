@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (chart) chart.destroy();
 
         const ctx = document.getElementById('b8zsChart').getContext('2d');
-        const config = createChartConfig(b8zsData, labels, 'Señal B8ZS');
+        const config = createChartConfig(b8zsData, labels, 'Señal B8ZS', voltajeInicial);
         
         // Agregar límites dinámicos
         config.options.scales.y.min = function(context) {

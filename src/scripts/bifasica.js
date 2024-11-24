@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function configurarGrafica(config, labels) {
         config.options.scales.x.ticks.callback = function(value, index) {
-            return index % 2 === 0 && index < labels.length - 2 ? this.getLabelForValue(value) : '';
+            return labels[index] || '';
         };
         
         config.options.scales.y.min = function(context) {
@@ -62,6 +62,17 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
 
+    function crearLabels(bits) {
+        const bitsConExtra = bits + '0';
+        const labels = new Array(bitsConExtra.length * 2).fill('');
+        
+        for (let i = 0; i < bitsConExtra.length; i++) {
+            labels[i * 2] = bitsConExtra[i];
+        }
+        
+        return labels;
+    }
+
     function actualizarGraficos() {
         const inputBits = document.getElementById('inputBits').value.trim();
         const voltajeInicial = parseFloat(document.getElementById('voltajeInicial').value);
@@ -72,28 +83,26 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        const bitsConExtra = inputBits + '0';
-        const labels = crearLabels(bitsConExtra);
+        const labels = new Array((inputBits.length * 2) + 1).fill('');
+        for (let i = 0; i < inputBits.length; i++) {
+            labels[i * 2 + 1] = inputBits[i];
+        }
         
-        // Destruir gráficos existentes
         if (manchesterChart) manchesterChart.destroy();
         if (differentialChart) differentialChart.destroy();
 
-        // Generar y procesar datos según sea necesario
         if (displayType === 'manchester' || displayType === 'both') {
-            let manchesterData = generarManchester(bitsConExtra, voltajeInicial);
-            manchesterData = procesarDatos(manchesterData);
+            let manchesterData = generarManchester(inputBits, voltajeInicial);
             const ctx1 = document.getElementById('manchesterChart').getContext('2d');
-            const config1 = createChartConfig(manchesterData, labels, 'Señal Manchester');
+            const config1 = createChartConfig(manchesterData, labels, 'Señal Manchester', voltajeInicial);
             configurarGrafica(config1, labels);
             manchesterChart = new Chart(ctx1, config1);
         }
 
         if (displayType === 'differential' || displayType === 'both') {
-            let manchesterDifData = generarManchesterDiferencial(bitsConExtra, voltajeInicial);
-            manchesterDifData = procesarDatos(manchesterDifData);
+            let manchesterDifData = generarManchesterDiferencial(inputBits, voltajeInicial);
             const ctx2 = document.getElementById('manchesterDifferentialChart').getContext('2d');
-            const config2 = createChartConfig(manchesterDifData, labels, 'Señal Manchester Diferencial');
+            const config2 = createChartConfig(manchesterDifData, labels, 'Señal Manchester Diferencial', voltajeInicial);
             configurarGrafica(config2, labels);
             differentialChart = new Chart(ctx2, config2);
         }
@@ -101,35 +110,34 @@ document.addEventListener('DOMContentLoaded', function() {
         actualizarLayoutGraficas();
     }
 
-    function procesarDatos(data) {
-        const longitudSegmento = 2;
-        const ultimoIndice = data.length - longitudSegmento + Math.floor(longitudSegmento/4);
-        data = data.slice(0, ultimoIndice);
-        
-        if (data.length > 0) {
-            data[data.length - 1] = 0;
-        }
-        return data;
-    }
-
-    function crearLabels(bits) {
-        const labels = bits.split('').map(bit => [bit, bit]).flat();
-        labels[labels.length - 2] = '';
-        labels[labels.length - 1] = '';
-        return labels;
-    }
-
     // Event Listeners
     document.getElementById('btnVolver').addEventListener('click', () => {
         window.location.href = '../../index.html';
+    });
+
+    document.getElementById('inputBits').addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            actualizarGraficos();
+        }
     });
 
     document.getElementById('btnGenerar').addEventListener('click', actualizarGraficos);
     document.getElementById('chartWidth').addEventListener('input', actualizarTamanoGraficos);
     document.getElementById('chartHeight').addEventListener('input', actualizarTamanoGraficos);
     document.querySelectorAll('input[name="displayType"]').forEach(radio => {
-        radio.addEventListener('change', actualizarGraficos);
+        radio.addEventListener('change', () => {
+            if (manchesterChart || differentialChart) {
+                actualizarLayoutGraficas();
+            }
+        });
     });
 
+    // Establecer valor por defecto del ancho a 100%
+    const sliderAncho = document.getElementById('chartWidth');
+    sliderAncho.value = 100;
+    sliderAncho.setAttribute('value', '100');
+
+    // Actualizar el tamaño inicial
     actualizarTamanoGraficos();
 });

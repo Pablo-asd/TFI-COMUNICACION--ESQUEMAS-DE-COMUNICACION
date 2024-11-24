@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (chart) chart.destroy();
 
         const ctx = document.getElementById('amiChart').getContext('2d');
-        const config = createChartConfig(amiData, labels, 'Señal AMI');
+        const config = createChartConfig(amiData, labels, 'Señal AMI', voltajeInicial);
         
         // Agregar límites dinámicos
         config.options.scales.y.min = function(context) {

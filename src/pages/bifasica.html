@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Manchester</title>
+        <title>Codificación Bifásica</title>
         <!-- Bootstrap CSS -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         <!-- Chart.js -->
@@ -19,7 +19,7 @@
     </head>
 <body>
     <div class="container py-4">
-        <h2 class="text-center text-white mb-4">Esquema de Modulación Manchester</h2>
+        <h2 class="text-center text-white mb-4">Esquemas de Codificación Bifásica</h2>
         
         <div class="card bg-dark border-primary mb-4">
             <div class="card-body">
@@ -58,7 +58,7 @@
                 <div class="mb-3">
                     <label for="chartWidth" class="form-label text-white">Ancho del gráfico (%):</label>
                     <div class="d-flex align-items-center gap-2">
-                        <input type="range" id="chartWidth" class="form-range custom-range" min="50" max="100" value="80" step="5">
+                        <input type="range" id="chartWidth" class="form-range" min="0" max="100" value="100">
                         <span id="widthValue" class="text-white">80%</span>
                     </div>
                 </div>
@@ -96,6 +96,6 @@
     
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="module" src="../scripts/manchester.js"></script>
+    <script type="module" src="../scripts/bifasica.js"></script>
 </body>
 </html>

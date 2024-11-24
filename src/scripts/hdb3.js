@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (chart) chart.destroy();
 
         const ctx = document.getElementById('hdb3Chart').getContext('2d');
-        const config = createChartConfig(hdb3Data, labels, 'Señal HDB3');
+        const config = createChartConfig(hdb3Data, labels, 'Señal HDB3', voltajeInicial);
         
         // Agregar límites dinámicos
         config.options.scales.y.min = function(context) {

@@ -1,103 +1,96 @@
-export const createChartConfig = (data, labels, title) => {
+export const createChartConfig = (data, labels, title, voltajeInicial) => {
     // Calcular los límites base
     const limites = calcularLimites(data);
     const maxAbs = Math.max(Math.abs(limites.min), Math.abs(limites.max));
-    
-    // Agregar margen adicional (2 unidades más)
     const margenExtra = 2;
     const maxTotal = maxAbs + margenExtra;
+
+    // Crear anotaciones para las líneas verticales
+    const annotations = {};
+    const numBits = (labels.length - 1) / 2; // Calculamos el número de bits basado en las etiquetas
+    
+    // Agregar líneas verticales punteadas
+    for (let i = 0; i <= numBits; i++) {
+        annotations[`line${i}`] = {
+            type: 'line',
+            xMin: i * 2,
+            xMax: i * 2,
+            yMin: -voltajeInicial * 1.5,
+            yMax: voltajeInicial * 1.5,
+            borderColor: 'rgba(255, 255, 255, 0.5)',
+            borderWidth: 1,
+            borderDash: [5, 5],
+            drawTime: 'beforeDatasetsDraw'
+        };
+    }
+
+    // Agregar línea horizontal en y=0
+    annotations.zeroline = {
+        type: 'line',
+        yMin: 0,
+        yMax: 0,
+        borderColor: 'rgba(255, 255, 255, 0.5)',
+        borderWidth: 1,
+        borderDash: [5, 5],
+        drawTime: 'beforeDatasetsDraw'
+    };
 
     return {
         type: 'line',
         data: {
             labels: labels,
-            datasets: [
-                {
-                    label: title,
-                    data: data,
-                    borderColor: '#00ffff',
-                    backgroundColor: '#00ffff',
-                    borderWidth: 4,
-                    pointRadius: 6,
-                    pointBackgroundColor: '#00ffff',
-                    pointBorderColor: '#ffffff',
-                    pointBorderWidth: 2,
-                    fill: false,
-                    stepped: true,
-                    tension: 0,
-                }
-            ]
+            datasets: [{
+                label: title,
+                data: data,
+                borderColor: '#00ffff',
+                backgroundColor: '#00ffff',
+                borderWidth: 4,
+                pointRadius: 6,
+                pointBackgroundColor: '#00ffff',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                fill: false,
+                stepped: true,
+                tension: 0,
+            }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            animation: {
-                duration: 1500,
-                easing: 'easeInOutQuart',
-                x: {
-                    type: 'number',
-                    easing: 'linear',
-                    duration: 1500,
-                    from: NaN,
-                    delay(ctx) {
-                        if (ctx.type !== 'data' || ctx.xStarted) {
-                            return 0;
-                        }
-                        ctx.xStarted = true;
-                        return ctx.index * 100;
-                    }
-                }
-            },
+            animation: false,
             scales: {
                 x: {
-                    grid: {
-                        display: false
-                    },
                     ticks: {
+                        callback: function(value) {
+                            return labels[value] || '';
+                        },
+                        maxRotation: 0,
                         color: 'white',
                         font: {
-                            size: 16,
+                            size: 14,
                             weight: 'bold'
-                        },
-                        callback: function(value, index) {
-                            return labels[index];
                         }
                     },
-                    border: {
+                    grid: {
                         display: false
                     }
                 },
                 y: {
                     grid: {
-                        color: 'rgba(255, 255, 255, 0.1)',
-                        drawOnChartArea: false
+                        color: 'rgba(255, 255, 255, 0.1)'
                     },
                     ticks: {
                         color: 'white',
                         font: {
-                            size: 16,
+                            size: 14,
                             weight: 'bold'
                         }
-                    },
-                    border: {
-                        display: true,
-                        width: 2
                     }
                 }
             },
             plugins: {
                 annotation: {
-                    annotations: {
-                        zeroline: {
-                            type: 'line',
-                            yMin: 0,
-                            yMax: 0,
-                            borderColor: 'rgba(255, 255, 255, 0.5)',
-                            borderWidth: 2,
-                            borderDash: [5, 5],
-                            drawTime: 'beforeDatasetsDraw'
-                        }
-                    }
+                    annotations: annotations
                 },
                 legend: {
                     labels: {
@@ -108,10 +101,6 @@ export const createChartConfig = (data, labels, title) => {
                         }
                     }
                 }
-            },
-            interaction: {
-                intersect: false,
-                mode: 'index'
             }
         }
     };

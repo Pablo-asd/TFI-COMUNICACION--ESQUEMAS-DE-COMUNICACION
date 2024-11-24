@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const ctx = document.getElementById('nrzChart').getContext('2d');
-        const config = createChartConfig(nrzData, labels, 'Señal NRZ');
+        const config = createChartConfig(nrzData, labels, 'Señal NRZ', voltajeInicial);
         
         // Configurar límites dinámicos
         config.options.scales.y.min = function(context) {

@@ -4,34 +4,19 @@ export function generarManchester(bits, voltajeInicial) {
     const voltajeBajo = -Math.abs(voltajeInicial);
     
     for (let i = 0; i < bits.length; i++) {
-        if (bits[i] === '1') {
-            manchesterData.push(voltajeInicial >= 0 ? voltajeBajo : voltajeAlto);
-            manchesterData.push(voltajeInicial >= 0 ? voltajeAlto : voltajeBajo);
+        if (bits[i] === '0') {
+            // Para 0: alto a bajo
+            manchesterData.push(voltajeAlto);
+            manchesterData.push(voltajeBajo);
         } else {
-            manchesterData.push(voltajeInicial >= 0 ? voltajeAlto : voltajeBajo);
-            manchesterData.push(voltajeInicial >= 0 ? voltajeBajo : voltajeAlto);
+            // Para 1: bajo a alto
+            manchesterData.push(voltajeBajo);
+            manchesterData.push(voltajeAlto);
         }
     }
+    
+    // Agregamos un punto más para mantener el último nivel
+    manchesterData.push(manchesterData[manchesterData.length - 1]);
 
     return manchesterData;
-}
-
-export function generarManchesterDiferencial(bits, voltajeInicial) {
-    const manchesterDifData = [];
-    const voltajeAlto = Math.abs(voltajeInicial);
-    const voltajeBajo = -Math.abs(voltajeInicial);
-    let nivelActual = voltajeInicial >= 0 ? voltajeAlto : voltajeBajo;
-    
-    for (let i = 0; i < bits.length; i++) {
-        if (bits[i] === '1') {
-            // Para 1: invertimos el nivel
-            nivelActual = (nivelActual === voltajeAlto) ? voltajeBajo : voltajeAlto;
-        }
-        // Para 0 mantenemos el mismo nivel
-        
-        manchesterDifData.push(nivelActual);
-        manchesterDifData.push(nivelActual === voltajeAlto ? voltajeBajo : voltajeAlto);
-    }
-
-    return manchesterDifData;
 }
