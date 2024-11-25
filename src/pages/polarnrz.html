@@ -36,8 +36,8 @@
                 <div class="mb-3">
                     <label for="chartWidth" class="form-label text-white">Ancho del gráfico (%):</label>
                     <div class="d-flex align-items-center gap-2">
-                        <input type="range" id="chartWidth" class="form-range custom-range" min="50" max="100" value="80" step="5">
-                        <span id="widthValue" class="text-white">80%</span>
+                        <input type="range" id="chartWidth" class="form-range custom-range" min="50" max="100" value="100" step="5">
+                        <span id="widthValue" class="text-white">100%</span>
                     </div>
                 </div>
 
@@ -80,12 +80,12 @@
 
         <div class="card bg-dark border-primary">
             <div class="card-body">
-                <div id="timeChartContainer" class="d-flex flex-wrap justify-content-between">
-                    <div class="chart-wrapper">
-                        <canvas id="polarNRZLChart" class="chart-canvas"></canvas>
+                <div class="row" id="timeChartContainer">
+                    <div class="col-12 col-md-6 chart-container" id="nrzlContainer">
+                        <canvas id="polarNRZLChart"></canvas>
                     </div>
-                    <div class="chart-wrapper">
-                        <canvas id="polarNRZIChart" class="chart-canvas"></canvas>
+                    <div class="col-12 col-md-6 chart-container" id="nrziContainer">
+                        <canvas id="polarNRZIChart"></canvas>
                     </div>
                 </div>
             </div>

@@ -31,23 +31,37 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        const bitsConExtra = inputBits + '0';
-        const b8zsData = generarB8ZS(bitsConExtra, voltajeInicial);
-        const labels = [...inputBits.split(''), ''];
+        const b8zsData = generarB8ZS(inputBits, voltajeInicial);
+        
+        // Generar etiquetas para cada punto de la señal
+        const labels = new Array(inputBits.length * 2 + 1).fill('');
+        for (let i = 0; i < inputBits.length; i++) {
+            labels[i * 2 + 1] = inputBits[i];  // Coloca el bit en la posición central de cada intervalo
+        }
 
         if (chart) chart.destroy();
 
         const ctx = document.getElementById('b8zsChart').getContext('2d');
-        const config = createChartConfig(b8zsData, labels, 'Señal B8ZS', voltajeInicial);
+        const config = createChartConfig(b8zsData, labels, 'Señal B8ZS');
+        
+        // Personalizar la configuración para mostrar solo etiquetas de bits
+        config.options.scales.x.ticks.callback = function(value, index) {
+            return labels[index] || '';
+        };
+
+        // Configurar líneas de cuadrícula vertical punteadas
+        config.options.scales.x.grid.display = true;
+        config.options.scales.x.grid.color = 'rgba(255, 255, 255, 0.2)';
+        config.options.scales.x.grid.borderDash = [5, 5];
         
         // Agregar límites dinámicos
         config.options.scales.y.min = function(context) {
             const limites = calcularLimites(context.chart.data.datasets[0].data);
-            return limites.min;
+            return limites.min - 1;
         };
         config.options.scales.y.max = function(context) {
             const limites = calcularLimites(context.chart.data.datasets[0].data);
-            return limites.max;
+            return limites.max + 1;
         };
 
         chart = new Chart(ctx, config);

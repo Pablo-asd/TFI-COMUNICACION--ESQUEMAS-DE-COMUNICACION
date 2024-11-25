@@ -1,38 +1,84 @@
 export function generarB8ZS(bits, voltajeInicial) {
-    const b8zsData = [];
+    const data = [];
     const voltajeAlto = Math.abs(voltajeInicial);
     const voltajeBajo = -Math.abs(voltajeInicial);
-    let ultimaPolaridad = voltajeInicial >= 0 ? voltajeAlto : voltajeBajo;
-    let contadorCeros = 0;
+    let ultimaPolaridad = voltajeInicial > 0 ? voltajeAlto : voltajeBajo;
 
-    for (let i = 0; i < bits.length; i++) {
-        if (bits[i] === '0') {
+    // Para el primer bit
+    if (bits[0] === '1') {
+        data.push(ultimaPolaridad); // Usar la polaridad inicial correcta
+        data.push(ultimaPolaridad);
+    }
+
+    let contadorCeros = 0;
+    
+    for (let i = 1; i < bits.length; i++) {
+        const bit = bits[i];
+        
+        if (bit === '0') {
             contadorCeros++;
             
-            if (contadorCeros === 8) {
-                // Eliminar los últimos 5 ceros agregados
-                for (let j = 0; j < 5; j++) {
-                    b8zsData.pop();
-                }
-                
-                // Secuencia B8ZS: 000VB0VB
-                if (ultimaPolaridad === voltajeAlto) {
-                    b8zsData.push(0, 0, 0, voltajeBajo, voltajeAlto, 0, voltajeBajo, voltajeAlto);
-                    ultimaPolaridad = voltajeAlto;
+            if (contadorCeros === 4) {
+                // Si el voltaje inicial fue negativo, la secuencia es diferente
+                if (voltajeInicial < 0) {
+                    data.push(voltajeBajo); // B
+                    data.push(voltajeBajo);
                 } else {
-                    b8zsData.push(0, 0, 0, voltajeAlto, voltajeBajo, 0, voltajeAlto, voltajeBajo);
-                    ultimaPolaridad = voltajeBajo;
+                    data.push(voltajeAlto); // V
+                    data.push(voltajeAlto);
+                }
+            } else if (contadorCeros === 5) {
+                if (voltajeInicial < 0) {
+                    data.push(voltajeAlto); // V
+                    data.push(voltajeAlto);
+                } else {
+                    data.push(voltajeBajo); // B
+                    data.push(voltajeBajo);
+                }
+            } else if (contadorCeros === 6) {
+                data.push(0);
+                data.push(0);
+            } else if (contadorCeros === 7) {
+                if (voltajeInicial < 0) {
+                    data.push(voltajeAlto); // V
+                    data.push(voltajeAlto);
+                } else {
+                    data.push(voltajeBajo); // B
+                    data.push(voltajeBajo);
+                }
+            } else if (contadorCeros === 8) {
+                if (voltajeInicial < 0) {
+                    data.push(voltajeBajo); // B
+                    data.push(voltajeBajo);
+                } else {
+                    data.push(voltajeAlto); // V
+                    data.push(voltajeAlto);
                 }
                 contadorCeros = 0;
             } else {
-                b8zsData.push(0);
+                data.push(0);
+                data.push(0);
             }
-        } else { // bit es '1'
-            b8zsData.push(ultimaPolaridad);
-            ultimaPolaridad = (ultimaPolaridad === voltajeAlto) ? voltajeBajo : voltajeAlto;
+        } else {
             contadorCeros = 0;
+            ultimaPolaridad = (ultimaPolaridad === voltajeAlto) ? voltajeBajo : voltajeAlto;
+            data.push(ultimaPolaridad);
+            data.push(ultimaPolaridad);
         }
     }
 
-    return b8zsData;
-} 
+    return data;
+}
+
+export function generarPuntosGraficos(data) {
+    const puntos = [];
+    let tiempo = 0;
+
+    for (let i = 0; i < data.length; i++) {
+        puntos.push([tiempo, data[i]]);
+        tiempo += 0.5;
+    }
+
+    return puntos;
+}
+

@@ -1,17 +1,24 @@
 export function generarPolarRZ(bits, voltajeInicial) {
-    const polarRZData = [];
-    const voltajeAlto = Math.abs(voltajeInicial);
-    const voltajeBajo = -Math.abs(voltajeInicial);
+    const data = [];
+    const voltajePositivo = voltajeInicial;
+    const voltajeNegativo = -voltajeInicial;
+    const voltajeCero = 0;
 
     for (let i = 0; i < bits.length; i++) {
-        if (bits[i] === '1') {
-            polarRZData.push(voltajeInicial >= 0 ? voltajeAlto : voltajeBajo);
-            polarRZData.push(0);
-        } else {
-            polarRZData.push(voltajeInicial >= 0 ? voltajeBajo : voltajeAlto);
-            polarRZData.push(0);
+        const bitActual = bits[i];
+
+        if (bitActual === '1') {
+            // Primera mitad del intervalo para '1': voltaje positivo
+            data.push(voltajePositivo);
+            // Segunda mitad del intervalo para '1': vuelve a cero
+            data.push(voltajeCero);
+        } else if (bitActual === '0') {
+            // Primera mitad del intervalo para '0': voltaje negativo
+            data.push(voltajeNegativo);
+            // Segunda mitad del intervalo para '0': vuelve a cero
+            data.push(voltajeCero);
         }
     }
-
-    return polarRZData;
-} 
+    data.push(voltajeCero);
+    return data;
+}

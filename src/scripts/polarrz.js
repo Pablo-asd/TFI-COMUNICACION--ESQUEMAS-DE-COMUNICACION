@@ -37,34 +37,22 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        const bitsConExtra = inputBits + '0';
-        let polarRZData = generarPolarRZ(bitsConExtra, voltajeInicial);
-        
-        // Modificar el último segmento para mostrar solo hasta el punto donde cruza el cero
-        const longitudSegmento = 2; // Cada bit ocupa 2 puntos
-        const ultimoIndice = polarRZData.length - longitudSegmento + Math.floor(longitudSegmento/4); // Mostrar solo 1/4 del último segmento
-        polarRZData = polarRZData.slice(0, ultimoIndice);
-        
-        // Asegurarse de que el último punto sea cero
-        if (polarRZData.length > 0) {
-            polarRZData[polarRZData.length - 1] = 0;
-        }
+        let polarRZData = generarPolarRZ(inputBits, voltajeInicial);
         
         // Generar etiquetas
-        const labels = bitsConExtra.split('').map(bit => [bit, bit]).flat();
-        // Cambiar las últimas dos etiquetas por cadenas vacías
-        labels[labels.length - 2] = '';
-        labels[labels.length - 1] = '';
+        const labels = new Array((inputBits.length * 2) + 1).fill('');
+        for (let i = 0; i < inputBits.length; i++) {
+            labels[i * 2 + 1] = inputBits[i];
+        }
 
         if (chart) chart.destroy();
 
         const ctx = document.getElementById('polarRZChart').getContext('2d');
         const config = createChartConfig(polarRZData, labels, 'Señal Polar RZ');
         
-        // Personalizar la configuración para mostrar solo etiquetas de bits (pares)
+        // Personalizar la configuración para mostrar solo etiquetas de bits
         config.options.scales.x.ticks.callback = function(value, index) {
-            // Mostrar solo las etiquetas en posiciones pares y que no sean las últimas dos
-            return index % 2 === 0 && index < labels.length - 2 ? this.getLabelForValue(value) : '';
+            return labels[index] || '';
         };
         
         // Agregar límites dinámicos

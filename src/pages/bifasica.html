@@ -21,7 +21,7 @@
     <div class="container py-4">
         <h2 class="text-center text-white mb-4">Esquemas de Codificación Bifásica</h2>
         
-        <div class="card bg-dark border-primary mb-4">
+        <div class="card bg-dark border-primary">
             <div class="card-body">
                 <div class="mb-3">
                     <label for="inputBits" class="form-label text-white">Secuencia de bits:</label>
@@ -58,8 +58,8 @@
                 <div class="mb-3">
                     <label for="chartWidth" class="form-label text-white">Ancho del gráfico (%):</label>
                     <div class="d-flex align-items-center gap-2">
-                        <input type="range" id="chartWidth" class="form-range" min="0" max="100" value="100">
-                        <span id="widthValue" class="text-white">80%</span>
+                        <input type="range" id="chartWidth" class="form-range custom-range" min="50" max="100" value="100" step="5">
+                        <span id="widthValue" class="text-white">100%</span>
                     </div>
                 </div>
 
@@ -78,15 +78,13 @@
             </div>
         </div>
 
-        <div class="container">
-            <div class="row" id="chartsContainer">
-                <div id="manchesterContainer" class="col-12">
-                    <div class="chart-container">
+        <div class="card bg-dark border-primary">
+            <div class="card-body">
+                <div class="row" id="timeChartContainer">
+                    <div class="col-12 col-md-6 chart-container" id="manchesterContainer">
                         <canvas id="manchesterChart"></canvas>
                     </div>
-                </div>
-                <div id="differentialContainer" class="col-12 col-md-6 d-none">
-                    <div class="chart-container">
+                    <div class="col-12 col-md-6 chart-container" id="differentialContainer">
                         <canvas id="manchesterDifferentialChart"></canvas>
                     </div>
                 </div>

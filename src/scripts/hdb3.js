@@ -33,12 +33,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const bitsConExtra = inputBits + '0';
         const hdb3Data = generarHDB3(bitsConExtra, voltajeInicial);
-        const labels = [...inputBits.split(''), ''];
+        
+        // Crear etiquetas con espacios vacíos entre cada bit
+        const labels = new Array((inputBits.length * 2) + 1).fill('');
+        for (let i = 0; i < inputBits.length; i++) {
+            labels[i * 2 + 1] = inputBits[i];
+        }
 
         if (chart) chart.destroy();
 
         const ctx = document.getElementById('hdb3Chart').getContext('2d');
         const config = createChartConfig(hdb3Data, labels, 'Señal HDB3', voltajeInicial);
+        
+        // Ocultar los puntos
+        config.data.datasets[0].pointRadius = 0;
+        config.data.datasets[0].pointHoverRadius = 0;
         
         // Agregar límites dinámicos
         config.options.scales.y.min = function(context) {

@@ -13,37 +13,53 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('widthValue').textContent = `${width}%`;
         document.getElementById('heightValue').textContent = `${height}px`;
         
-        const containers = document.querySelectorAll('.chart-container');
+        const containers = document.querySelectorAll('.chart-container, canvas');
         containers.forEach(container => {
             container.style.width = `${width}%`;
-            container.style.height = `${height}px`;
+            if (container.tagName.toLowerCase() === 'div') {
+                container.style.height = `${height}px`;
+            }
         });
 
-        if (manchesterChart) manchesterChart.resize();
-        if (differentialChart) differentialChart.resize();
+        requestAnimationFrame(() => {
+            if (manchesterChart) manchesterChart.resize();
+            if (differentialChart) differentialChart.resize();
+        });
     }
 
     function actualizarLayoutGraficas() {
         const displayType = document.querySelector('input[name="displayType"]:checked').value;
         const manchesterContainer = document.getElementById('manchesterContainer');
         const differentialContainer = document.getElementById('differentialContainer');
-
+        
+        // Primero resetear las clases
+        manchesterContainer.className = 'chart-container';
+        differentialContainer.className = 'chart-container';
+        
         switch(displayType) {
             case 'manchester':
-                manchesterContainer.className = 'col-12';
-                differentialContainer.className = 'col-12 d-none';
+                manchesterContainer.className = 'chart-container col-12';
+                differentialContainer.style.display = 'none';
+                manchesterContainer.style.display = 'block';
                 break;
             case 'differential':
-                manchesterContainer.className = 'col-12 d-none';
-                differentialContainer.className = 'col-12';
+                differentialContainer.className = 'chart-container col-12';
+                manchesterContainer.style.display = 'none';
+                differentialContainer.style.display = 'block';
                 break;
             case 'both':
-                manchesterContainer.className = 'col-12 col-md-6';
-                differentialContainer.className = 'col-12 col-md-6';
+                manchesterContainer.className = 'chart-container col-12 col-md-6';
+                differentialContainer.className = 'chart-container col-12 col-md-6';
+                manchesterContainer.style.display = 'block';
+                differentialContainer.style.display = 'block';
                 break;
         }
 
-        actualizarTamanoGraficos();
+        // Forzar actualización de tamaño
+        requestAnimationFrame(() => {
+            if (manchesterChart) manchesterChart.resize();
+            if (differentialChart) differentialChart.resize();
+        });
     }
 
     function configurarGrafica(config, labels) {
@@ -127,7 +143,11 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('chartHeight').addEventListener('input', actualizarTamanoGraficos);
     document.querySelectorAll('input[name="displayType"]').forEach(radio => {
         radio.addEventListener('change', () => {
-            if (manchesterChart || differentialChart) {
+            // Si ya hay datos ingresados, regenerar las gráficas inmediatamente
+            const inputBits = document.getElementById('inputBits').value.trim();
+            if (inputBits) {
+                actualizarGraficos();
+            } else {
                 actualizarLayoutGraficas();
             }
         });
