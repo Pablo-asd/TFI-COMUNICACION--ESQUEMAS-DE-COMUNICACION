@@ -61,9 +61,11 @@ export const createChartConfig = (data, labels, title, voltajeInicial) => {
             scales: {
                 x: {
                     ticks: {
+                        
                         callback: function(value) {
                             return labels[value] || '';
                         },
+                        
                         maxRotation: 0,
                         color: 'white',
                         font: {

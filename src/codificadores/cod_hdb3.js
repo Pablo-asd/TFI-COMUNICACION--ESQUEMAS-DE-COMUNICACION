@@ -1,22 +1,21 @@
 /*************  ✨ Codeium Command 🌟  *************/
 export function generarHDB3(bits, voltajeInicial) {
     const data = [];
-    const voltajeAlto = Math.abs(voltajeInicial);
-    const voltajeBajo = -Math.abs(voltajeInicial);
+    const voltajeAlto = -Math.abs(voltajeInicial);
+    const voltajeBajo = Math.abs(voltajeInicial);
     let ultimaPolaridad = voltajeInicial >= 0 ? voltajeAlto : voltajeBajo;
     let contadorCeros = 0;
     let contadorPulsos = 0;
 
     // Iniciar la señal con el voltaje inicial
-    data.push(voltajeInicial)
-    data.push(voltajeInicial) // Punto inicial
+     // Punto inicial
 
     for (let i = 0; i < bits.length; i++) {
         const bit = bits[i];
 
         if (bit === '1') {
             // Punto en la línea punteada (transición)
-            ultimaPolaridad = (ultimaPolaridad === voltajeAlto) ? voltajeBajo : voltajeAlto;
+            ultimaPolaridad = ultimaPolaridad === voltajeAlto ? voltajeBajo : voltajeAlto;
             data.push(ultimaPolaridad); // Transición
             data.push(ultimaPolaridad);
              // Mantener nivel
@@ -32,7 +31,7 @@ export function generarHDB3(bits, voltajeInicial) {
                 
                 if (contadorPulsos % 2 === 0) {
                     // Patrón B00V (para número par de pulsos)
-                    ultimaPolaridad = (ultimaPolaridad === voltajeAlto) ? voltajeBajo : voltajeAlto;
+                    ultimaPolaridad = ultimaPolaridad === voltajeAlto ? voltajeBajo : voltajeAlto;
                     // B
                     data.push(ultimaPolaridad); // Transición
                     data.push(ultimaPolaridad); // Durante el bit
@@ -56,7 +55,7 @@ export function generarHDB3(bits, voltajeInicial) {
                     data.push(0); // Transición tercer 0
                     data.push(0); // Durante el bit
                     // V
-                    let polaridadViolacion = (ultimaPolaridad === voltajeAlto) ? voltajeBajo : voltajeAlto;
+                    let polaridadViolacion = ultimaPolaridad === voltajeAlto ? voltajeAlto : voltajeBajo;
                     data.push(polaridadViolacion); // Transición
                     data.push(polaridadViolacion); // Durante el bit
                     ultimaPolaridad = polaridadViolacion;
@@ -70,11 +69,8 @@ export function generarHDB3(bits, voltajeInicial) {
             }
         }
     }
-
     return data;
 }
-
-/******  83cb8281-3073-4a5c-9cf1-160f285af7f7  *******/
 
 export function generarPuntosGraficos(data) {
     const puntos = [];

@@ -38,10 +38,14 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Por favor, ingrese solo 1s y 0s');
             return;
         }
+        const abels = new Array((inputBits.length * 2) + 1).fill('');
+        for (let i = 0; i < inputBits.length; i++) {
+            abels[i] = inputBits[i];
+        }
 
         // Calcular voltajes automáticamente
         const voltajeAlto = Math.abs(voltajeInicial);
-        const voltajeBajo = -Math.abs(voltajeInicial);
+        const voltajeBajo = 0
 
         const bitsConExtra = inputBits + '0';
         const nrzData = generarNRZ(bitsConExtra, voltajeAlto, voltajeBajo, voltajeInicial);
@@ -56,9 +60,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const config = createChartConfig(nrzData, labels, 'Señal NRZ', voltajeInicial);
         
         // Configurar límites dinámicos
+        config.options.scales.x.ticks.callback = function(context, index) {
+            return abels[index] || '';
+        };
         config.options.scales.y.min = function(context) {
             const limites = calcularLimites(context.chart.data.datasets[0].data);
-            return limites.min - 1;
+            return limites.min +0;
         };
         config.options.scales.y.max = function(context) {
             const limites = calcularLimites(context.chart.data.datasets[0].data);
@@ -68,6 +75,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Crear nuevo gráfico
         chart = new Chart(ctx, config);
     }
+
+
 
     // Event Listeners
     document.getElementById('btnVolver').addEventListener('click', () => {
