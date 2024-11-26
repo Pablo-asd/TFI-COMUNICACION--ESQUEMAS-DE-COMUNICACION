@@ -5,7 +5,10 @@ export function generarHDB3(bits, voltajeInicial) {
     let ultimaPolaridad = voltajeInicial >= 0 ? voltajeAlto : voltajeBajo;
     let contadorCeros = 0;
     let contadorPulsos = 0;
-    let nivelActual = ultimaPolaridad;
+
+    // Iniciar la señal con el voltaje inicial
+    data.push(voltajeInicial)
+    data.push(voltajeInicial) // Punto inicial
 
     for (let i = 0; i < bits.length; i++) {
         const bit = bits[i];
@@ -13,10 +16,9 @@ export function generarHDB3(bits, voltajeInicial) {
         if (bit === '1') {
             // Punto en la línea punteada (transición)
             ultimaPolaridad = (ultimaPolaridad === voltajeAlto) ? voltajeBajo : voltajeAlto;
+            data.push(ultimaPolaridad); // Transición
             data.push(ultimaPolaridad);
-            // Punto durante el bit (mantener nivel)
-            data.push(ultimaPolaridad);
-            nivelActual = ultimaPolaridad;
+             // Mantener nivel
             contadorPulsos++;
             contadorCeros = 0;
         } else {
@@ -30,18 +32,17 @@ export function generarHDB3(bits, voltajeInicial) {
                     // Patrón B00V (para número par de pulsos)
                     ultimaPolaridad = (ultimaPolaridad === voltajeAlto) ? voltajeBajo : voltajeAlto;
                     // B
-                    data.push(ultimaPolaridad); // Transición
-                    data.push(ultimaPolaridad); // Durante el bit
+                    data.push(0); // Transición
+                    data.push(0); // Durante el bit
                     // Primer 0
                     data.push(0); // Transición
                     data.push(0); // Durante el bit
                     // Segundo 0
-                    data.push(0); // Transición
-                    data.push(0); // Durante el bit
+                    data.push(voltajeAlto); // Transición
+                    data.push(voltajeAlto); // Durante el bit
                     // V
                     data.push(ultimaPolaridad); // Transición
                     data.push(ultimaPolaridad); // Durante el bit
-                    nivelActual = ultimaPolaridad;
                 } else {
                     // Patrón 000V (para número impar de pulsos)
                     // Tres ceros
@@ -56,7 +57,6 @@ export function generarHDB3(bits, voltajeInicial) {
                     data.push(polaridadViolacion); // Transición
                     data.push(polaridadViolacion); // Durante el bit
                     ultimaPolaridad = polaridadViolacion;
-                    nivelActual = polaridadViolacion;
                 }
                 
                 contadorPulsos++;
@@ -65,7 +65,6 @@ export function generarHDB3(bits, voltajeInicial) {
                 // Cero normal
                 data.push(0); // Transición en línea punteada
                 data.push(0); // Durante el bit
-                nivelActual = 0;
             }
         }
     }
