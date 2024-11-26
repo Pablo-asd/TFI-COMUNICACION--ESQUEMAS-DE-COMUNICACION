@@ -1,3 +1,4 @@
+/*************  ✨ Codeium Command 🌟  *************/
 export function generarHDB3(bits, voltajeInicial) {
     const data = [];
     const voltajeAlto = Math.abs(voltajeInicial);
@@ -26,23 +27,25 @@ export function generarHDB3(bits, voltajeInicial) {
             
             if (contadorCeros === 4) {
                 // Retroceder para sustituir los últimos 4 ceros
+                
                 data.splice(data.length - 6, 6);
                 
                 if (contadorPulsos % 2 === 0) {
                     // Patrón B00V (para número par de pulsos)
                     ultimaPolaridad = (ultimaPolaridad === voltajeAlto) ? voltajeBajo : voltajeAlto;
                     // B
-                    data.push(0); // Transición
-                    data.push(0); // Durante el bit
+                    data.push(ultimaPolaridad); // Transición
+                    data.push(ultimaPolaridad); // Durante el bit
                     // Primer 0
                     data.push(0); // Transición
                     data.push(0); // Durante el bit
                     // Segundo 0
-                    data.push(voltajeAlto); // Transición
-                    data.push(voltajeAlto); // Durante el bit
+                    data.push(0); // Transición
+                    data.push(0); // Durante el bit
                     // V
                     data.push(ultimaPolaridad); // Transición
                     data.push(ultimaPolaridad); // Durante el bit
+
                 } else {
                     // Patrón 000V (para número impar de pulsos)
                     // Tres ceros
@@ -58,7 +61,6 @@ export function generarHDB3(bits, voltajeInicial) {
                     data.push(polaridadViolacion); // Durante el bit
                     ultimaPolaridad = polaridadViolacion;
                 }
-                
                 contadorPulsos++;
                 contadorCeros = 0;
             } else {
@@ -71,6 +73,8 @@ export function generarHDB3(bits, voltajeInicial) {
 
     return data;
 }
+
+/******  83cb8281-3073-4a5c-9cf1-160f285af7f7  *******/
 
 export function generarPuntosGraficos(data) {
     const puntos = [];
