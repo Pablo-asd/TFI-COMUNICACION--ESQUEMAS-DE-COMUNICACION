@@ -7,16 +7,6 @@ export function generarHDB3(bits, voltajeInicial) {
     let contadorCeros = 0;
     let contadorPulsos = 0;
     let ultimoPatronFueB00V = false;
-    let contadorUnos = 0; // Para alternar entre patrones
-
-    for (let i = 0; i < bits.length; i++) {
-        if (bits[i]==='1') {
-            contadorUnos++;
-        } 
-    }
-
-    let bitParidad = (contadorUnos%2===0)? '0':'1';
-   
     
     for (let i = 0; i < bits.length; i++) {
         if (bits[i] === '1') {
@@ -48,9 +38,9 @@ export function generarHDB3(bits, voltajeInicial) {
                     ultimoPatronFueB00V = true;
                     contadorPulsos=0;
                 } else {
-                    // Usar patrón 000V
+                    
                     let polaridadV;
-                        // Contador impar
+                    
                         if (ultimaPolaridad > 0) {
                             polaridadV = voltajeAlto;
                             contadorPulsos=0;  // V positivo
@@ -78,7 +68,6 @@ export function generarHDB3(bits, voltajeInicial) {
 }
 
 function agregarPulso(data, valor) {
-    // Cada pulso consiste en dos puntos para mantener el nivel durante el período
     data.push(valor);
     data.push(valor);
 }

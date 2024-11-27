@@ -4,9 +4,9 @@ export function generarB8ZS(bits, voltajeInicial) {
     const voltajeBajo = -Math.abs(voltajeInicial);
     let ultimaPolaridad = voltajeInicial > 0 ? voltajeAlto : voltajeBajo;
 
-    // Para el primer bit
+
     if (bits[0] === '1') {
-        data.push(ultimaPolaridad); // Usar la polaridad inicial correcta
+        data.push(ultimaPolaridad); 
         data.push(ultimaPolaridad);
     }
 
