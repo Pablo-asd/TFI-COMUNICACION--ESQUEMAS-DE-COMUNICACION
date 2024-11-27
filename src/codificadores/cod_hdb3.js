@@ -1,85 +1,107 @@
-/*************  ✨ Codeium Command 🌟  *************/
 export function generarHDB3(bits, voltajeInicial) {
     const data = [];
-    const voltajeAlto = -Math.abs(voltajeInicial);
-    const voltajeBajo = Math.abs(voltajeInicial);
-    let ultimaPolaridad = voltajeInicial >= 0 ? voltajeAlto : voltajeBajo;
+    const voltajeAlto = Math.abs(voltajeInicial);
+    const voltajeBajo = -Math.abs(voltajeInicial);
+    
+    let ultimaPolaridad = voltajeInicial >= 0 ? voltajeBajo : voltajeAlto;
     let contadorCeros = 0;
     let contadorPulsos = 0;
-
-    // Iniciar la señal con el voltaje inicial
-     // Punto inicial
+    let ultimoPatronFueB00V = false; // Para alternar entre patrones
 
     for (let i = 0; i < bits.length; i++) {
-        const bit = bits[i];
-
-        if (bit === '1') {
-            // Punto en la línea punteada (transición)
-            ultimaPolaridad = ultimaPolaridad === voltajeAlto ? voltajeBajo : voltajeAlto;
-            data.push(ultimaPolaridad); // Transición
-            data.push(ultimaPolaridad);
-             // Mantener nivel
+        if (bits[i] === '1') {
+            ultimaPolaridad = -ultimaPolaridad;
+            agregarPulso(data, ultimaPolaridad);
             contadorPulsos++;
             contadorCeros = 0;
         } else {
             contadorCeros++;
             
             if (contadorCeros === 4) {
-                // Retroceder para sustituir los últimos 4 ceros
-                
+                // Eliminar los últimos tres ceros (6 puntos) que ya se agregaron
                 data.splice(data.length - 6, 6);
                 
-                if (contadorPulsos % 2 === 0) {
-                    // Patrón B00V (para número par de pulsos)
-                    ultimaPolaridad = ultimaPolaridad === voltajeAlto ? voltajeBajo : voltajeAlto;
-                    // B
-                    data.push(ultimaPolaridad); // Transición
-                    data.push(ultimaPolaridad); // Durante el bit
-                    // Primer 0
-                    data.push(0); // Transición
-                    data.push(0); // Durante el bit
-                    // Segundo 0
-                    data.push(0); // Transición
-                    data.push(0); // Durante el bit
-                    // V
-                    data.push(ultimaPolaridad); // Transición
-                    data.push(ultimaPolaridad); // Durante el bit
-
+                // Alternar entre patrones para una mejor distribución de señal
+                if (!ultimoPatronFueB00V) {
+                    // Usar patrón B00V
+                    let polaridadBV;
+                    
+                    if (contadorPulsos % 2 === 0) {
+                        // Contador par
+                        if (ultimaPolaridad > 0) {
+                            polaridadBV = voltajeBajo;  // B y V negativos
+                        } else {
+                            polaridadBV = voltajeAlto;  // B y V positivos
+                        }
+                    } else {
+                        // Contador impar
+                        if (ultimaPolaridad > 0) {
+                            polaridadBV = voltajeBajo;  // B y V negativos
+                        } else {
+                            polaridadBV = voltajeAlto;  // B y V positivos
+                        }
+                    }
+                    
+                    agregarPulso(data, polaridadBV);     // B
+                    agregarPulso(data, 0);               // 0
+                    agregarPulso(data, 0);               // 0
+                    agregarPulso(data, polaridadBV);     // V
+                    ultimaPolaridad = polaridadBV;
+                    ultimoPatronFueB00V = true;
                 } else {
-                    // Patrón 000V (para número impar de pulsos)
-                    // Tres ceros
-                    data.push(0); // Transición primer 0
-                    data.push(0); // Durante el bit
-                    data.push(0); // Transición segundo 0
-                    data.push(0); // Durante el bit
-                    data.push(0); // Transición tercer 0
-                    data.push(0); // Durante el bit
-                    // V
-                    let polaridadViolacion = ultimaPolaridad === voltajeAlto ? voltajeAlto : voltajeBajo;
-                    data.push(polaridadViolacion); // Transición
-                    data.push(polaridadViolacion); // Durante el bit
-                    ultimaPolaridad = polaridadViolacion;
+                    // Usar patrón 000V
+                    let polaridadV;
+                    
+                    if (contadorPulsos % 2 === 0) {
+                        // Contador par
+                        if (ultimaPolaridad > 0) {
+                            polaridadV = voltajeAlto;  // V positivo
+                        } else {
+                            polaridadV = voltajeBajo;  // V negativo
+                        }
+                    } else {
+                        // Contador impar
+                        if (ultimaPolaridad > 0) {
+                            polaridadV = voltajeAlto;  // V positivo
+                        } else {
+                            polaridadV = voltajeBajo;  // V negativo
+                        }
+                    }
+                    
+                    agregarPulso(data, 0);              // 0
+                    agregarPulso(data, 0);              // 0
+                    agregarPulso(data, 0);              // 0
+                    agregarPulso(data, polaridadV);     // V
+                    ultimaPolaridad = polaridadV;
+                    ultimoPatronFueB00V = false;
                 }
-                contadorPulsos++;
+                
+                contadorPulsos++;  // La violación cuenta como un pulso
                 contadorCeros = 0;
             } else {
-                // Cero normal
-                data.push(0); // Transición en línea punteada
-                data.push(0); // Durante el bit
+                agregarPulso(data, 0);
             }
         }
     }
+    
     return data;
+}
+
+function agregarPulso(data, valor) {
+    // Cada pulso consiste en dos puntos para mantener el nivel durante el período
+    data.push(valor);
+    data.push(valor);
 }
 
 export function generarPuntosGraficos(data) {
     const puntos = [];
     let tiempo = 0;
+    const intervalo = 0.5;
 
     for (let i = 0; i < data.length; i++) {
         puntos.push([tiempo, data[i]]);
-        tiempo += 0.5; // Medio intervalo para cada punto
+        tiempo += intervalo;
     }
 
     return puntos;
-} 
+}
