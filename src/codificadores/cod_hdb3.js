@@ -6,8 +6,18 @@ export function generarHDB3(bits, voltajeInicial) {
     let ultimaPolaridad = voltajeInicial >= 0 ? voltajeBajo : voltajeAlto;
     let contadorCeros = 0;
     let contadorPulsos = 0;
-    let ultimoPatronFueB00V = false; // Para alternar entre patrones
+    let ultimoPatronFueB00V = false;
+    let contadorUnos = 0; // Para alternar entre patrones
 
+    for (let i = 0; i < bits.length; i++) {
+        if (bits[i]==='1') {
+            contadorUnos++;
+        } 
+    }
+
+    let bitParidad = (contadorUnos%2===0)? '0':'1';
+   
+    
     for (let i = 0; i < bits.length; i++) {
         if (bits[i] === '1') {
             ultimaPolaridad = -ultimaPolaridad;
@@ -18,65 +28,45 @@ export function generarHDB3(bits, voltajeInicial) {
             contadorCeros++;
             
             if (contadorCeros === 4) {
-                // Eliminar los últimos tres ceros (6 puntos) que ya se agregaron
+                
                 data.splice(data.length - 6, 6);
                 
-                // Alternar entre patrones para una mejor distribución de señal
-                if (!ultimoPatronFueB00V) {
-                    // Usar patrón B00V
+                if (contadorPulsos % 2 ===0) {
+                   
                     let polaridadBV;
-                    
-                    if (contadorPulsos % 2 === 0) {
-                        // Contador par
+                        
                         if (ultimaPolaridad > 0) {
-                            polaridadBV = voltajeBajo;  // B y V negativos
+                            polaridadBV = voltajeBajo; // B y V negativos
                         } else {
-                            polaridadBV = voltajeAlto;  // B y V positivos
+                            polaridadBV = voltajeAlto;// B y V positivos
                         }
-                    } else {
-                        // Contador impar
-                        if (ultimaPolaridad > 0) {
-                            polaridadBV = voltajeBajo;  // B y V negativos
-                        } else {
-                            polaridadBV = voltajeAlto;  // B y V positivos
-                        }
-                    }
-                    
                     agregarPulso(data, polaridadBV);     // B
                     agregarPulso(data, 0);               // 0
                     agregarPulso(data, 0);               // 0
                     agregarPulso(data, polaridadBV);     // V
                     ultimaPolaridad = polaridadBV;
                     ultimoPatronFueB00V = true;
+                    contadorPulsos=0;
                 } else {
                     // Usar patrón 000V
                     let polaridadV;
-                    
-                    if (contadorPulsos % 2 === 0) {
-                        // Contador par
-                        if (ultimaPolaridad > 0) {
-                            polaridadV = voltajeAlto;  // V positivo
-                        } else {
-                            polaridadV = voltajeBajo;  // V negativo
-                        }
-                    } else {
                         // Contador impar
                         if (ultimaPolaridad > 0) {
-                            polaridadV = voltajeAlto;  // V positivo
+                            polaridadV = voltajeAlto;
+                            contadorPulsos=0;  // V positivo
                         } else {
-                            polaridadV = voltajeBajo;  // V negativo
+                            polaridadV = voltajeBajo;
+                            contadorPulsos=0;  // V negativo
                         }
-                    }
-                    
                     agregarPulso(data, 0);              // 0
                     agregarPulso(data, 0);              // 0
                     agregarPulso(data, 0);              // 0
                     agregarPulso(data, polaridadV);     // V
                     ultimaPolaridad = polaridadV;
                     ultimoPatronFueB00V = false;
+                    contadorPulsos=0;
                 }
                 
-                contadorPulsos++;  // La violación cuenta como un pulso
                 contadorCeros = 0;
             } else {
                 agregarPulso(data, 0);
