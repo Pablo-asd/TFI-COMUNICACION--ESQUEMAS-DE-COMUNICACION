@@ -22,7 +22,6 @@ export function generarHDB3(bits, voltajeInicial) {
                 data.splice(data.length - 6, 6);
                 
                 if (contadorPulsos % 2 ===0) {
-                   
                     let polaridadBV;
                         
                         if (ultimaPolaridad > 0) {
