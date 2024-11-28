@@ -10,15 +10,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const container = document.getElementById('timeChartContainer');
         const canvas = document.getElementById('nrzChart');
 
-        // Actualizar los valores mostrados
         document.getElementById('widthValue').textContent = `${width}%`;
         document.getElementById('heightValue').textContent = `${height}px`;
 
-        // Aplicar dimensiones
         container.style.width = `${width}%`;
         container.style.height = `${height}px`;
         
-        // Si hay un gráfico existente, actualizarlo
+        
         if (chart) {
             chart.resize();
         }
@@ -28,7 +26,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const inputBits = document.getElementById('inputBits').value.trim();
         const voltajeInicial = parseFloat(document.getElementById('voltajeInicial').value);
         
-        // Validar entrada
         if (!inputBits) {
             alert('Por favor, ingrese una secuencia de bits');
             return;
@@ -38,18 +35,17 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Por favor, ingrese solo 1s y 0s');
             return;
         }
-        const abels = new Array((inputBits.length * 2) + 1).fill('');
-        for (let i = 0; i < inputBits.length; i++) {
-            abels[i] = inputBits[i];
-        }
 
-        // Calcular voltajes automáticamente
+       
         const voltajeAlto = Math.abs(voltajeInicial);
-        const voltajeBajo = 0
-
-        const bitsConExtra = inputBits + '0';
-        const nrzData = generarNRZ(bitsConExtra, voltajeAlto, voltajeBajo, voltajeInicial);
-        const labels = [...inputBits.split(''), ''];
+        const voltajeBajo = 0;
+        
+        const nrzData = generarDatosNRZ(inputBits, voltajeAlto, voltajeBajo);
+        
+        const labels = new Array((inputBits.length * 2) + 1).fill('');
+        for (let i = 0; i < inputBits.length; i++) {
+            labels[i *2 + 1] = inputBits[i];  
+        }
 
         // Destruir gráfico existente si hay uno
         if (chart) {
@@ -60,36 +56,53 @@ document.addEventListener('DOMContentLoaded', function() {
         const config = createChartConfig(nrzData, labels, 'Señal NRZ', voltajeInicial);
         
         // Configurar límites dinámicos
-        config.options.scales.x.ticks.callback = function(context, index) {
-            return abels[index] || '';
+        config.options.scales.x.min = 0; // Ajustar el límite mínimo del eje X
+        config.options.scales.x.max = inputBits.length * 2; // Ajustar el límite máximo del eje X
+        config.options.scales.x.ticks.callback = function(value, index) {
+            return labels[index] || '';
         };
         config.options.scales.y.min = function(context) {
             const limites = calcularLimites(context.chart.data.datasets[0].data);
-            return limites.min +0;
+            return limites.min; // Ajustar el límite inferior del eje Y
         };
         config.options.scales.y.max = function(context) {
             const limites = calcularLimites(context.chart.data.datasets[0].data);
-            return limites.max + 1;
+            return limites.max + 1; // Ajustar el límite superior del eje Y
         };
 
-        // Crear nuevo gráfico
+        
         chart = new Chart(ctx, config);
     }
 
-
-
-    // Event Listeners
+    
     document.getElementById('btnVolver').addEventListener('click', () => {
         window.location.href = '../../index.html';
     });
 
     document.getElementById('btnGenerar').addEventListener('click', actualizarGrafico);
     
-    // Event Listeners para los controles de tamaño
+    
     document.getElementById('chartWidth').addEventListener('input', actualizarTamanoGraficos);
     document.getElementById('chartHeight').addEventListener('input', actualizarTamanoGraficos);
 
     document.getElementById('chartWidth').value = 100;
-    // Inicializar tamaños al cargar
+    
     actualizarTamanoGraficos();
 });
+
+function generarDatosNRZ(bits, voltajeAlto, voltajeBajo) {
+    const data = [];
+    let currentVoltage = voltajeAlto; 
+    for (let i = 0; i < bits.length; i++) {
+        if (bits[i] === '1') {
+            data.push(voltajeAlto);
+            data.push(voltajeAlto);
+        } else {
+            data.push(voltajeBajo);
+            data.push(voltajeBajo);
+        }
+        
+    }
+
+    return data;
+}

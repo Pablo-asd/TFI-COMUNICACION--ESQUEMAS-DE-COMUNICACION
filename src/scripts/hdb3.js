@@ -49,12 +49,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 display: true,
                 drawOnChartArea: true,
                 drawTicks: false,
+                borderDash: [5, 5], // Línea punteada
+                lineWidth: 1,
                 color: (context) => {
                     // Mostrar líneas verticales solo en las posiciones de transición
                     return context.index % 2 === 0 ? '#ddd' : 'transparent';
                 },
-                borderDash: [5, 5], // Línea punteada
-                lineWidth: 1
             },
             ticks: {
                 display: true,

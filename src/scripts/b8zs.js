@@ -33,10 +33,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const b8zsData = generarB8ZS(inputBits, voltajeInicial);
         
-        // Generar etiquetas para cada punto de la señal
         const labels = new Array(inputBits.length * 2 + 1).fill('');
         for (let i = 0; i < inputBits.length; i++) {
-            labels[i * 2 + 1] = inputBits[i];  // Coloca el bit en la posición central de cada intervalo
+            labels[i * 2 + 1] = inputBits[i];  
         }
 
         if (chart) chart.destroy();
@@ -44,12 +43,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const ctx = document.getElementById('b8zsChart').getContext('2d');
         const config = createChartConfig(b8zsData, labels, 'Señal B8ZS');
         
-        // Personalizar la configuración para mostrar solo etiquetas de bits
+        
         config.options.scales.x.ticks.callback = function(value, index) {
             return labels[index] || '';
         };
 
-        // Configurar líneas de cuadrícula vertical punteadas
+        
         config.options.scales.x.grid.display = true;
         config.options.scales.x.grid.color = 'rgba(255, 255, 255, 0.2)';
         config.options.scales.x.grid.borderDash = [5, 5];

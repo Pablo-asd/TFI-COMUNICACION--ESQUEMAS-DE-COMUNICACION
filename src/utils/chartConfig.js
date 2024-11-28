@@ -45,7 +45,7 @@ export const createChartConfig = (data, labels, title, voltajeInicial) => {
                 borderColor: '#00ffff',
                 backgroundColor: '#00ffff',
                 borderWidth: 4,
-                pointRadius: 6,
+                pointRadius: 0,
                 pointBackgroundColor: '#00ffff',
                 pointBorderColor: '#ffffff',
                 pointBorderWidth: 2,
