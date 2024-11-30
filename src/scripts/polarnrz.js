@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const nrzlContainer = document.getElementById('nrzlContainer');
         const nrziContainer = document.getElementById('nrziContainer');
         
-        // Primero resetear las clases
         nrzlContainer.className = 'chart-container';
         nrziContainer.className = 'chart-container';
         
@@ -34,7 +33,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 break;
         }
 
-        // Forzar actualización de tamaño
         requestAnimationFrame(() => {
             if (nrzlChart) nrzlChart.resize();
             if (nrziChart) nrziChart.resize();
@@ -45,7 +43,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const width = document.getElementById('chartWidth').value;
         const height = document.getElementById('chartHeight').value;
         
-        // Actualizar los valores mostrados
         document.getElementById('widthValue').textContent = `${width}%`;
         document.getElementById('heightValue').textContent = `${height}px`;
         
@@ -55,7 +52,6 @@ document.addEventListener('DOMContentLoaded', function() {
             container.style.height = `${height}px`;
         });
 
-        // Forzar actualización de tamaño de las gráficas
         requestAnimationFrame(() => {
             if (nrzlChart) nrzlChart.resize();
             if (nrziChart) nrziChart.resize();
@@ -67,8 +63,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const voltajeInicial = parseFloat(document.getElementById('voltajeInicial').value);
         const displayType = document.querySelector('input[name="displayType"]:checked').value;
 
+        if (!inputBits) {
+            alert('Por favor, ingrese una secuencia de bits');
+            return;
+        }
         if (!/^[01]+$/.test(inputBits)) {
             alert('Por favor, ingrese solo 1s y 0s');
+            return;
+        }
+        if (isNaN(voltajeInicial)) {
+            alert('Por favor, ingrese un valor numérico para el voltaje.');
             return;
         }
 
@@ -94,11 +98,11 @@ document.addEventListener('DOMContentLoaded', function() {
             nrziChart = new Chart(ctx2, config2);
         }
 
-        // Actualizar layout después de crear las gráficas
+     
         actualizarLayoutGraficas();
     }
 
-    // Event Listeners
+   
     document.getElementById('btnVolver').addEventListener('click', () => {
         window.location.href = '../../index.html';
     });
@@ -106,15 +110,12 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('btnGenerar').addEventListener('click', actualizarGraficos);
     document.getElementById('chartHeight').addEventListener('input', actualizarTamanoGraficos);
     
-    // Establecer ancho inicial y actualizar layout
     document.getElementById('chartHeight').value = 400;
     actualizarTamanoGraficos();
     actualizarLayoutGraficas();
 
-    // Modificar el event listener para los radio buttons
     document.querySelectorAll('input[name="displayType"]').forEach(radio => {
         radio.addEventListener('change', () => {
-            // Si ya hay datos ingresados, regenerar las gráficas inmediatamente
             const inputBits = document.getElementById('inputBits').value.trim();
             if (inputBits) {
                 actualizarGraficos();
@@ -124,7 +125,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Agregar evento para la tecla Enter
     document.getElementById('inputBits').addEventListener('keypress', (event) => {
         if (event.key === 'Enter') {
             event.preventDefault();
@@ -132,14 +132,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Agregar el event listener para el slider de ancho
     document.getElementById('chartWidth').addEventListener('input', actualizarTamanoGraficos);
 
-    // Establecer valor por defecto del ancho a 100%
     const sliderAncho = document.getElementById('chartWidth');
     sliderAncho.value = 100;
     sliderAncho.setAttribute('value', '100');
 
-    // Actualizar el tamaño inicial
+    document.getElementById('inputBits').addEventListener('input', function() {
+        this.value = this.value.replace(/[^01]/g, ''); 
+    });
+
+    document.getElementById('voltajeInicial').addEventListener('input', function() {
+        const value = this.value;
+        if (value !== '-' && !/^-?\d*\.?\d*$/.test(value)) {
+            this.value = value.slice(0, -1);
+        }
+    });
+
     actualizarTamanoGraficos();
 });

@@ -4,21 +4,17 @@ import { generarB8ZS } from '../codificadores/cod_b8zs.js';
 document.addEventListener('DOMContentLoaded', function() {
     let chart = null;
 
-    // Función para actualizar el tamaño de los contenedores
     function actualizarTamanoGraficos() {
         const width = document.getElementById('chartWidth').value;
         const height = document.getElementById('chartHeight').value;
         
-        // Actualizar valores mostrados
         document.getElementById('widthValue').textContent = `${width}%`;
         document.getElementById('heightValue').textContent = `${height}px`;
-        
-        // Actualizar contenedor
+      
         const timeContainer = document.getElementById('timeChartContainer');
         timeContainer.style.width = `${width}%`;
         timeContainer.style.height = `${height}px`;
 
-        // Si el gráfico existe, actualizarlo
         if (chart) chart.resize();
     }
 
@@ -26,8 +22,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const inputBits = document.getElementById('inputBits').value.trim();
         const voltajeInicial = parseFloat(document.getElementById('voltajeInicial').value);
 
+        if (!inputBits) {
+            alert('Por favor, ingrese una secuencia de bits');
+            return;
+        }
         if (!/^[01]+$/.test(inputBits)) {
             alert('Por favor, ingrese solo 1s y 0s');
+            return;
+        }
+
+        if (isNaN(voltajeInicial)) {
+            alert('Por favor, ingrese un valor numérico para el voltaje.');
             return;
         }
 
@@ -47,13 +52,12 @@ document.addEventListener('DOMContentLoaded', function() {
         config.options.scales.x.ticks.callback = function(value, index) {
             return labels[index] || '';
         };
-
-        
+      
         config.options.scales.x.grid.display = true;
         config.options.scales.x.grid.color = 'rgba(255, 255, 255, 0.2)';
         config.options.scales.x.grid.borderDash = [5, 5];
         
-        // Agregar límites dinámicos
+      
         config.options.scales.y.min = function(context) {
             const limites = calcularLimites(context.chart.data.datasets[0].data);
             return limites.min - 1;
@@ -66,17 +70,26 @@ document.addEventListener('DOMContentLoaded', function() {
         chart = new Chart(ctx, config);
     }
 
-    // Event Listeners
     document.getElementById('btnVolver').addEventListener('click', () => {
         window.location.href = '../../index.html';
     });
 
-    document.getElementById('btnGenerar').addEventListener('click', actualizarGrafico);
-    
-    // Event Listeners para los controles de tamaño
+    document.getElementById('btnGenerar').addEventListener('click', actualizarGrafico); 
+  
     document.getElementById('chartWidth').addEventListener('input', actualizarTamanoGraficos);
     document.getElementById('chartHeight').addEventListener('input', actualizarTamanoGraficos);
     document.getElementById('chartWidth').value = 100;
-    // Inicializar tamaños
+ 
     actualizarTamanoGraficos();
+
+    document.getElementById('inputBits').addEventListener('input', function() {
+        this.value = this.value.replace(/[^01]/g, ''); 
+    });
+
+    document.getElementById('voltajeInicial').addEventListener('input', function() {
+        const value = this.value;
+        if (value !== '-' && !/^-?\d*\.?\d*$/.test(value)) {
+            this.value = value.slice(0, -1);
+        }
+    });
 });

@@ -94,8 +94,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const voltajeInicial = parseFloat(document.getElementById('voltajeInicial').value);
         const displayType = document.querySelector('input[name="displayType"]:checked').value;
 
+        if (!inputBits) {
+            alert('Por favor, ingrese una secuencia de bits');
+            return;
+        }
         if (!/^[01]+$/.test(inputBits)) {
             alert('Por favor, ingrese solo 1s y 0s');
+            return;
+        }
+        if (isNaN(voltajeInicial)) {
+            alert('Por favor, ingrese un valor numérico para el voltaje.');
             return;
         }
 
@@ -126,7 +134,6 @@ document.addEventListener('DOMContentLoaded', function() {
         actualizarLayoutGraficas();
     }
 
-    // Event Listeners
     document.getElementById('btnVolver').addEventListener('click', () => {
         window.location.href = '../../index.html';
     });
@@ -143,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('chartHeight').addEventListener('input', actualizarTamanoGraficos);
     document.querySelectorAll('input[name="displayType"]').forEach(radio => {
         radio.addEventListener('change', () => {
-            // Si ya hay datos ingresados, regenerar las gráficas inmediatamente
+            
             const inputBits = document.getElementById('inputBits').value.trim();
             if (inputBits) {
                 actualizarGraficos();
@@ -158,6 +165,16 @@ document.addEventListener('DOMContentLoaded', function() {
     sliderAncho.value = 100;
     sliderAncho.setAttribute('value', '100');
 
-    // Actualizar el tamaño inicial
+    document.getElementById('inputBits').addEventListener('input', function() {
+        this.value = this.value.replace(/[^01]/g, ''); 
+    });
+
+    document.getElementById('voltajeInicial').addEventListener('input', function() {
+        const value = this.value;
+        if (value !== '-' && !/^-?\d*\.?\d*$/.test(value)) {
+            this.value = value.slice(0, -1);
+        }
+    });
+
     actualizarTamanoGraficos();
 });

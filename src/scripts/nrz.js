@@ -8,14 +8,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const width = document.getElementById('chartWidth').value;
         const height = document.getElementById('chartHeight').value;
         const container = document.getElementById('timeChartContainer');
-        const canvas = document.getElementById('nrzChart');
 
         document.getElementById('widthValue').textContent = `${width}%`;
         document.getElementById('heightValue').textContent = `${height}px`;
 
         container.style.width = `${width}%`;
         container.style.height = `${height}px`;
-        
         
         if (chart) {
             chart.resize();
@@ -36,18 +34,21 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-       
-        const voltajeAlto = Math.abs(voltajeInicial);
+        if (isNaN(voltajeInicial) || voltajeInicial <= 0) {
+            alert('El voltaje inicial debe ser un valor numérico positivo');
+            return;
+        }
+
+        const voltajeAlto = voltajeInicial;
         const voltajeBajo = 0;
         
-        const nrzData = generarDatosNRZ(inputBits, voltajeAlto, voltajeBajo);
+        const nrzData = generarNRZ(inputBits, voltajeAlto, voltajeBajo, voltajeInicial);
         
         const labels = new Array((inputBits.length * 2) + 1).fill('');
         for (let i = 0; i < inputBits.length; i++) {
-            labels[i *2 + 1] = inputBits[i];  
+            labels[i * 2 + 1] = inputBits[i];  
         }
 
-        // Destruir gráfico existente si hay uno
         if (chart) {
             chart.destroy();
         }
@@ -55,32 +56,39 @@ document.addEventListener('DOMContentLoaded', function() {
         const ctx = document.getElementById('nrzChart').getContext('2d');
         const config = createChartConfig(nrzData, labels, 'Señal NRZ', voltajeInicial);
         
-        // Configurar límites dinámicos
-        config.options.scales.x.min = 0; // Ajustar el límite mínimo del eje X
-        config.options.scales.x.max = inputBits.length * 2; // Ajustar el límite máximo del eje X
+        config.options.scales.x.min = 0; 
+        config.options.scales.x.max = inputBits.length * 2; 
         config.options.scales.x.ticks.callback = function(value, index) {
             return labels[index] || '';
         };
         config.options.scales.y.min = function(context) {
             const limites = calcularLimites(context.chart.data.datasets[0].data);
-            return limites.min; // Ajustar el límite inferior del eje Y
+            return limites.min; 
         };
         config.options.scales.y.max = function(context) {
             const limites = calcularLimites(context.chart.data.datasets[0].data);
-            return limites.max + 1; // Ajustar el límite superior del eje Y
+            return limites.max + 1; 
         };
 
-        
         chart = new Chart(ctx, config);
     }
 
-    
+    document.getElementById('inputBits').addEventListener('input', function() {
+        this.value = this.value.replace(/[^01]/g, '');
+    });
+
+    document.getElementById('voltajeInicial').addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9.]/g, '');
+        if (this.value.startsWith('.')) {
+            this.value = '0' + this.value;
+        }
+    });
+
     document.getElementById('btnVolver').addEventListener('click', () => {
         window.location.href = '../../index.html';
     });
 
     document.getElementById('btnGenerar').addEventListener('click', actualizarGrafico);
-    
     
     document.getElementById('chartWidth').addEventListener('input', actualizarTamanoGraficos);
     document.getElementById('chartHeight').addEventListener('input', actualizarTamanoGraficos);
@@ -89,20 +97,3 @@ document.addEventListener('DOMContentLoaded', function() {
     
     actualizarTamanoGraficos();
 });
-
-function generarDatosNRZ(bits, voltajeAlto, voltajeBajo) {
-    const data = [];
-    let currentVoltage = voltajeAlto; 
-    for (let i = 0; i < bits.length; i++) {
-        if (bits[i] === '1') {
-            data.push(voltajeAlto);
-            data.push(voltajeAlto);
-        } else {
-            data.push(voltajeBajo);
-            data.push(voltajeBajo);
-        }
-        
-    }
-
-    return data;
-}

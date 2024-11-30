@@ -110,3 +110,26 @@ body {
     width: 100% !important;
     height: 100% !important;
 }
+
+.github-icon {
+    color: white; 
+        text-decoration: none; 
+        font-size: 30px; 
+        transition: transform 0.3s, color 0.3s;
+}
+
+.github-icon:hover {
+    color: #00ffff;; 
+    transform: scale(1.2);
+}
+
+.fixed-bottom {
+    position: fixed; /* Fijo respecto a la ventana */
+    bottom: 0; /* Pegado abajo */
+    width: 100%; /* Ocupa todo el ancho */
+    z-index: 1030; /* Sobre otros elementos */
+}
+
+.input-error {
+    border: 2px solid #ff0000; /* Rojo eléctrico */
+}

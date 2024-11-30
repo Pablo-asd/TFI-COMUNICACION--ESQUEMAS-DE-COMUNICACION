@@ -9,6 +9,7 @@ export function generarNRZ(bits, voltajeAlto, voltajeBajo, voltajeInicial) {
             voltajeActual = voltajeInicial >= 0 ? voltajeBajo : voltajeAlto;
         }
         nrzData.push(voltajeActual);
+        nrzData.push(voltajeActual);
     }
 
     return nrzData;

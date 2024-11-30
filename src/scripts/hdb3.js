@@ -4,21 +4,17 @@ import { generarHDB3 } from '../codificadores/cod_hdb3.js';
 document.addEventListener('DOMContentLoaded', function() {
     let chart = null;
 
-    // Función para actualizar el tamaño de los contenedores
     function actualizarTamanoGraficos() {
         const width = document.getElementById('chartWidth').value;
         const height = document.getElementById('chartHeight').value;
-        
-        // Actualizar valores mostrados
+    
         document.getElementById('widthValue').textContent = `${width}%`;
         document.getElementById('heightValue').textContent = `${height}px`;
         
-        // Actualizar contenedor
         const timeContainer = document.getElementById('timeChartContainer');
         timeContainer.style.width = `${width}%`;
         timeContainer.style.height = `${height}px`;
 
-        // Si el gráfico existe, actualizarlo
         if (chart) chart.resize();
     }
 
@@ -26,17 +22,24 @@ document.addEventListener('DOMContentLoaded', function() {
         const inputBits = document.getElementById('inputBits').value.trim();
         const voltajeInicial = parseFloat(document.getElementById('voltajeInicial').value);
 
+        if (!inputBits) {
+            alert('Por favor, ingrese una secuencia de bits');
+            return;
+        }
         if (!/^[01]+$/.test(inputBits)) {
             alert('Por favor, ingrese solo 1s y 0s');
+            return;
+        }
+        if (isNaN(voltajeInicial)) {
+            alert('Por favor, ingrese un valor numérico para el voltaje.');
             return;
         }
 
         const hdb3Data = generarHDB3(inputBits, voltajeInicial);
         
-        // Crear etiquetas alineadas con los bits (entre líneas punteadas)
         const labels = new Array(hdb3Data.length).fill('');
         for (let i = 0; i < inputBits.length; i++) {
-            labels[i * 2 + 1] = inputBits[i];  // Colocar bits entre líneas punteadas
+            labels[i * 2 + 1] = inputBits[i];  
         }
 
         if (chart) chart.destroy();
@@ -49,10 +52,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 display: true,
                 drawOnChartArea: true,
                 drawTicks: false,
-                borderDash: [5, 5], // Línea punteada
+                borderDash: [5, 5], 
                 lineWidth: 1,
                 color: (context) => {
-                    // Mostrar líneas verticales solo en las posiciones de transición
                     return context.index % 2 === 0 ? '#ddd' : 'transparent';
                 },
             },
@@ -71,11 +73,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 drawOnChartArea: true,
                 color: (context) => {
                     if (context.tick.value === 0) {
-                        return '#666'; // Solo mostrar la línea del cero
+                        return '#666';
                     }
-                    return 'transparent'; // Ocultar otras líneas horizontales
+                    return 'transparent'; 
                 },
-                borderDash: [5, 5], // Línea punteada para el cero
+                borderDash: [5, 5],
                 lineWidth: 1
             },
             ticks: {
@@ -83,7 +85,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         };
 
-        // Configuración de la línea de datos
         config.data.datasets[0].stepped = true;    
         config.data.datasets[0].steppedLine = 'before';  
         config.data.datasets[0].lineTension = 0;
@@ -92,17 +93,26 @@ document.addEventListener('DOMContentLoaded', function() {
         chart = new Chart(ctx, config);
     }
 
-    // Event Listeners
     document.getElementById('btnVolver').addEventListener('click', () => {
         window.location.href = '../../index.html';
     });
 
     document.getElementById('btnGenerar').addEventListener('click', actualizarGrafico);
     
-    // Event Listeners para los controles de tamaño
     document.getElementById('chartWidth').addEventListener('input', actualizarTamanoGraficos);
     document.getElementById('chartHeight').addEventListener('input', actualizarTamanoGraficos);
     document.getElementById('chartWidth').value = 100;
-    // Inicializar tamaños
+   
     actualizarTamanoGraficos();
+
+    document.getElementById('inputBits').addEventListener('input', function() {
+        this.value = this.value.replace(/[^01]/g, ''); 
+    });
+
+    document.getElementById('voltajeInicial').addEventListener('input', function() {
+        const value = this.value;
+        if (value !== '-' && !/^-?\d*\.?\d*$/.test(value)) {
+            this.value = value.slice(0, -1);
+        }
+    });
 });
